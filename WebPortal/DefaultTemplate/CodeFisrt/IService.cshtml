@@ -1,0 +1,26 @@
+﻿@using System.Text
+@using FreeSqlBuilder.TemplateEngine
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@model FreeSqlBuilder.TemplateEngine.IBuilderTask
+@{
+    Layout = "../Share/_Layout.cshtml";
+    var table = Model.CurrentTable;
+    var dtoNames = new [] { "Dto", "RequestDto", "PageViewDto", "PageRequest" };
+    var dtoBuilders = Model.Project.Builders.Where(x => dtoNames.Contains(x.Name)).ToList();
+    var sb = new StringBuilder();
+    dtoBuilders.Select(x => $"{Model?.Project?.ProjectInfo?.NameSpace}.{x?.ReplaceTablePath(table.CsName).Replace("/",".")}").Distinct().ToList().ForEach(t => sb.AppendLine($"using {t};"));
+}
+
+using FreeSql;
+@Model.GetUsing()
+@sb.ToString()
+using System.Threading.Tasks;
+
+namespace @(Model.GetNameSpace())
+{
+    @($"{table.Comment}服务".GetCSharpSummary())
+    public interface @Model.GetCodeFirstName() : IServiceBase@($"<{table.CsName}>")
+    {
+        @{ await Html.RenderPartialAsync("./CURD/_ICURD.cshtml", new CurdTask(Model, table)); }
+    }
+}

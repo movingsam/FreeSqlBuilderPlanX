@@ -1,0 +1,42 @@
+﻿@using System.Text
+@using FreeSqlBuilder.TemplateEngine
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@model FreeSqlBuilder.TemplateEngine.IBuilderTask
+@{
+    Layout = "../Share/_Layout.cshtml";
+    var table = Model.CurrentTable;
+    var dtoNames = new [] { "Dto", "RequestDto", "PageViewDto", "PageRequest" };
+    var dtoBuilders = Model.Project.Builders.Where(x => dtoNames.Contains(x.Name)).ToList();
+    var sb = new StringBuilder();
+    var contextBuilder = Model.Project.GlobalBuilders.FirstOrDefault(x => x.Name == "Context");
+    var iService = Model.Project.Builders.FirstOrDefault(x => x.Name == "IService");
+    var iServiceNameSpace = iService.GetNameSpace(Model);
+    var nameSpace = Model.Project.ProjectInfo.NameSpace.Split(".").Last();
+    var currentContext = $"{nameSpace}{contextBuilder?.Suffix}";
+    var contextNameSpace = $"{Model.Project.ProjectInfo.NameSpace}.{contextBuilder?.Name}";
+    dtoBuilders.Select(x => $"{Model?.Project?.ProjectInfo?.NameSpace}.{x?.ReplaceTablePath(table.CsName)?.Replace("/",".")}").Distinct().ToList().ForEach(t => sb.AppendLine($"using {t};"));
+}
+
+using FreeSql;
+@Model.GetUsing()
+@sb.ToString()
+using @iServiceNameSpace;
+using @contextNameSpace;
+using FreeSql.DataAnnotations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using AutoMapper;
+using System.Threading.Tasks;
+
+namespace @(Model.GetNameSpace())
+{
+    @($"{table.Comment}服务".GetCSharpSummary())
+    public class @Model.GetCodeFirstName() : ServiceBase@($"<{table.CsName},{currentContext}>") , @iService.GetName(table.CsName)
+    {
+        @("构造函数".GetCSharpSummary())
+        public @(Model.GetCodeFirstName())(IServiceProvider service,ILogger@($"<{Model.GetCodeFirstName()}>")logger) : base(service,logger)
+        {
+        }
+        @{ await Html.RenderPartialAsync("./CURD/_CURD.cshtml", new CurdTask(Model, table)); }
+    }
+}

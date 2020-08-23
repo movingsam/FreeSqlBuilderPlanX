@@ -1,0 +1,9 @@
+﻿@using FreeSqlBuilder.TemplateEngine.Utilities
+@using CurdTask = FreeSqlBuilder.TemplateEngine.CurdTask
+@model CurdTask
+@{
+    var Dto = Model.Task.Project.Builders.FirstOrDefault(x => x.Name == "RequestDto").GetName(Model.CurrentTable.CsName);
+}
+
+        @($"{Model.CurrentTable.Comment}新增".GetCSharpSummary())
+        Task<@("bool")> New@(Model.CurrentTable.CsName) (@Dto request);

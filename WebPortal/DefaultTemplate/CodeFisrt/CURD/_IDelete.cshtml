@@ -1,0 +1,11 @@
+﻿@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@using CurdTask = FreeSqlBuilder.TemplateEngine.CurdTask
+@model CurdTask
+@{
+    var table = Model.CurrentTable;
+    var pk = Reflection.ToCsType(table.Primarys.FirstOrDefault()?.CsType);
+    var pkName = table.Primarys.FirstOrDefault()?.CsName;
+}
+        @($"{table.Comment}删除".GetCSharpSummary())
+        Task<@("bool")> Delete@(table.CsName)(@pk id);

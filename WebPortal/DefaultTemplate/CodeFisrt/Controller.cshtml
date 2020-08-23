@@ -1,0 +1,82 @@
+﻿@using System.Text
+@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@model FreeSqlBuilder.TemplateEngine.IBuilderTask
+@{
+    Layout = "../Share/_Layout.cshtml";
+    var table = Model.CurrentTable;
+    var dtoNames = new[] { "Dto", "RequestDto", "PageViewDto", "PageRequest" };
+    var dtoBuilders = Model.Project.Builders.Where(x => dtoNames.Contains(x.Name)).ToList();
+    var sb = new StringBuilder();
+    var iServiceBuilder = Model.Project.Builders.FirstOrDefault(x => x.Name == "IService");
+    dtoBuilders.Select(x => $"{Model?.Project?.ProjectInfo?.NameSpace}.{x?.ReplaceTablePath(table.CsName)?.Replace("/",".")}").Distinct().ToList().ForEach(t => sb.AppendLine($"using {t};"));
+    var actionResult = $"async Task<IActionResult>";
+    var task = Model;
+    var pageRequest = task.Project.Builders.FirstOrDefault(x => x.Name == "PageRequest").GetName(Model.CurrentTable.CsName);
+    var requestDto = task.Project.Builders.FirstOrDefault(x => x.Name == "RequestDto").GetName(Model.CurrentTable.CsName);
+    var pkTypeName = table.GetPkTypeName(); 
+    var iServiceNameSpace = iServiceBuilder.GetNameSpace(Model);
+}
+
+
+@Model.GetUsing()
+@sb.ToString()
+using @iServiceNameSpace;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using FreeSqlBuilderPlanX.Infrastructure.Controller;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+
+namespace @(Model.GetNameSpace())
+{
+@($"{table.Comment}服务".GetCSharpSummary(4))
+    public class @Model.GetCodeFirstName() : ApiControllerBase
+    {
+        private @iServiceBuilder.GetName(table.CsName) _service => HttpContext.RequestServices.GetService@($"<{iServiceBuilder.GetName(table.CsName)}>")();
+        private ILogger Logger =>  HttpContext.RequestServices.GetService@($"<ILogger<{Model.GetCodeFirstName()}>>")();
+        @("构造函数".GetCSharpSummary())
+        public @(Model.GetCodeFirstName())()
+        {
+        }
+        @($"{table.Comment}分页查询".GetCSharpSummary())
+        [HttpGet("Page")]
+        public @actionResult GetPage(@pageRequest request)
+        {
+            var res= await _service.Query@(Model.CurrentTable.CsName)Page(request);
+            return Success(res);
+        }
+
+        @($"{table.Comment}查询".GetCSharpSummary())
+        [HttpGet("{Id}")]
+        public @actionResult Get(@pkTypeName Id)
+        {
+            var res= await _service.Query@(Model.CurrentTable.CsName)(Id);
+            return Success(res);
+        }
+        @($"{table.Comment}新增".GetCSharpSummary())
+        [HttpPost]
+        public @actionResult New(@requestDto request)
+        {
+            var res= await _service.New@(Model.CurrentTable.CsName)(request);
+            return Success(res);
+        }
+        @($"{table.Comment}修改".GetCSharpSummary())
+        [HttpPut]
+        public @actionResult Update(@pageRequest request)
+        {
+            var res= await _service.Update@(Model.CurrentTable.CsName)(request);
+            return Success(res);
+        }
+        @($"{table.Comment}删除".GetCSharpSummary())
+        [HttpDelete("{Id}")]
+        public @actionResult Delete(@pkTypeName Id)
+        {
+            var res= await _service.Delete@(Model.CurrentTable.CsName)(Id);
+            return Success(res);
+        }
+
+    }
+}

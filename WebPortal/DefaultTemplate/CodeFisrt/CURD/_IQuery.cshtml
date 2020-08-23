@@ -1,0 +1,16 @@
+﻿@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@using CurdTask = FreeSqlBuilder.TemplateEngine.CurdTask
+@model CurdTask
+@{
+    var task = Model.Task;
+    var pageRequest = task.Project.Builders.FirstOrDefault(x => x.Name == "PageRequest").GetName(Model.CurrentTable.CsName);
+    var pageViewDto = task.Project.Builders.FirstOrDefault(x => x.Name == "PageViewDto").GetName(Model.CurrentTable.CsName);
+    var dto = task.Project.Builders.FirstOrDefault(x => x.Name == "Dto").GetName(Model.CurrentTable.CsName);
+    var pkName = Reflection.ToCsType(Model.CurrentTable.Primarys.FirstOrDefault()?.CsType);
+}
+        @($"{Model.CurrentTable?.Comment}分页查询".GetCSharpSummary())
+        Task<@(pageViewDto)> Query@(Model.CurrentTable.CsName)Page (@pageRequest request);
+
+        @($"{Model.CurrentTable?.Comment}查询".GetCSharpSummary())
+        Task<@dto> Query@(Model.CurrentTable.CsName) (@pkName id);

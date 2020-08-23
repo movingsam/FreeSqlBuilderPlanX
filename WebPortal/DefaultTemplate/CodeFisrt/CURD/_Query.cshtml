@@ -1,0 +1,39 @@
+﻿@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@using CurdTask = FreeSqlBuilder.TemplateEngine.CurdTask
+@model CurdTask
+@{
+    var task = Model.Task;
+    var pageRequest = task.Project.Builders.FirstOrDefault(x => x.Name == "PageRequest").GetName(Model.CurrentTable.CsName);
+    var pageViewDto = task.Project.Builders.FirstOrDefault(x => x.Name == "PageViewDto").GetName(Model.CurrentTable.CsName);
+    var requestDto = task.Project.Builders.FirstOrDefault(x => x.Name == "RequestDto").GetName(Model.CurrentTable.CsName);
+    var dto = task.Project.Builders.FirstOrDefault(x => x.Name == "Dto").GetName(Model.CurrentTable.CsName);
+    var includes = task.CurrentTable.GetIncludeStr(32);
+    var includeMany = task.CurrentTable.GetIncludeManyStr(32);
+    var whereIf = task.CurrentTable.GetWhereIfByColumns("request",32);
+    var includeStr = $"{includes}{includeMany}";
+    var pkType = Reflection.ToCsType(task.CurrentTable.Primarys.FirstOrDefault()?.CsType);
+    var pkName = task.CurrentTable.Primarys.FirstOrDefault()?.CsName;
+}
+        @($"{Model.CurrentTable?.Comment}分页查询".GetCSharpSummary())
+        public async Task<@(pageViewDto)> Query@(Model.CurrentTable.CsName)Page (@pageRequest request)
+        {
+            var datas =await Repository
+                                .Select@(includeStr)@(whereIf)
+                                .Count(out var total)
+                                .Page(request.PageNumber, request.PageSize)
+                                .ToListAsync();
+            var views = Mapper.Map@($"<List<{dto}>>")(datas);
+            var page = new @pageViewDto (views,total, request.PageNumber, request.PageSize);
+            return page;
+        }
+
+        @($"{Model.CurrentTable?.Comment}查询".GetCSharpSummary())
+        public async Task<@dto> Query@(Model.CurrentTable.CsName) (@pkType Id)
+        {
+            var data = await Repository.Select@(includeStr) 
+                                       .Where(x=>x.@pkName == Id)
+                                       .ToOneAsync();
+            var view = Mapper.Map@($"<{dto}>")(data);
+            return view;
+        }
