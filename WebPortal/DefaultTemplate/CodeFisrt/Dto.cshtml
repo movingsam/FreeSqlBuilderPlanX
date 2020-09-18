@@ -10,7 +10,7 @@
 @Model.GetUsing()
 using System.Collections;
 using System.Collections.Generic;
-using FreeSql.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace @Model.GetNameSpace()
 {
@@ -18,9 +18,9 @@ namespace @Model.GetNameSpace()
     {
     @foreach (var column in table.Properties)
     {
-        @(table.Columns.FirstOrDefault(x=>x.Value.CsName == column.Key).Value.RequestDtoGetAttribute())
-        @(Comment.GetProperyCommentBySummary(table.Type).FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
+        @(table.Columns?.FirstOrDefault(x=>x.Value.CsName == column.Key).Value?.RequestDtoGetAttribute())
+        @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
         @:public @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
     }
     }
-}
+    }

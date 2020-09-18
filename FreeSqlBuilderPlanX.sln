@@ -11,19 +11,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilderPlanX.Infrast
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilderPlanX.Application.Entity", "FreeSqlBuilderPalanX.Application.Entity\FreeSqlBuilderPlanX.Application.Entity.csproj", "{06B3D3C6-9579-4313-9C21-64C9E0F99D52}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilderUI", "..\movingsam\FreeSqlBuilder\src\FreeSqlBuilderUI\FreeSqlBuilderUI\FreeSqlBuilderUI.csproj", "{6F9183E8-C151-4F30-86AB-4AE456554977}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilderUI", "..\FreeSqlBuilder\src\FreeSqlBuilderUI\FreeSqlBuilderUI\FreeSqlBuilderUI.csproj", "{6F9183E8-C151-4F30-86AB-4AE456554977}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilder.Core", "..\movingsam\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder.Core\FreeSqlBuilder.Core.csproj", "{0A4DA769-1B5A-48A6-B302-6CBE20CDE71F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilder.Core", "..\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder.Core\FreeSqlBuilder.Core.csproj", "{0A4DA769-1B5A-48A6-B302-6CBE20CDE71F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FreeSqlBuilder", "FreeSqlBuilder", "{C4C421A2-9F3C-49D8-85E7-B2E084F0A5DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilder", "..\movingsam\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder\FreeSqlBuilder.csproj", "{95CEE769-7D48-4044-8832-ABFFE5D30C58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilder", "..\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder\FreeSqlBuilder.csproj", "{95CEE769-7D48-4044-8832-ABFFE5D30C58}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilder.TemplateEngine", "..\movingsam\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder.TemplateEngine\FreeSqlBuilder.TemplateEngine.csproj", "{AF56F4BC-D4D9-4937-9585-6DF062787A16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilder.TemplateEngine", "..\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder.TemplateEngine\FreeSqlBuilder.TemplateEngine.csproj", "{AF56F4BC-D4D9-4937-9585-6DF062787A16}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{CDEBB8F3-7312-49E1-8C5E-C17D88CA7E01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeSqlBuilderPlanX.Application", "FreeSqlBuilderPlanX.Application\FreeSqlBuilderPlanX.Application.csproj", "{B7461AB9-F5E7-43FE-8DEF-355B9DBE257E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeSqlBuilderPlanX.Application", "FreeSqlBuilderPlanX.Application\FreeSqlBuilderPlanX.Application.csproj", "{B7461AB9-F5E7-43FE-8DEF-355B9DBE257E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{75AFA6AF-99E2-4706-848D-E63C781D17A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XUnitTestIoc", "XUnitTestIoc\XUnitTestIoc.csproj", "{0AEEA07D-3356-45CB-A996-FE6F8B38C5E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,10 @@ Global
 		{B7461AB9-F5E7-43FE-8DEF-355B9DBE257E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7461AB9-F5E7-43FE-8DEF-355B9DBE257E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7461AB9-F5E7-43FE-8DEF-355B9DBE257E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AEEA07D-3356-45CB-A996-FE6F8B38C5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AEEA07D-3356-45CB-A996-FE6F8B38C5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AEEA07D-3356-45CB-A996-FE6F8B38C5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AEEA07D-3356-45CB-A996-FE6F8B38C5E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +86,7 @@ Global
 		{95CEE769-7D48-4044-8832-ABFFE5D30C58} = {C4C421A2-9F3C-49D8-85E7-B2E084F0A5DA}
 		{AF56F4BC-D4D9-4937-9585-6DF062787A16} = {C4C421A2-9F3C-49D8-85E7-B2E084F0A5DA}
 		{B7461AB9-F5E7-43FE-8DEF-355B9DBE257E} = {CDEBB8F3-7312-49E1-8C5E-C17D88CA7E01}
+		{0AEEA07D-3356-45CB-A996-FE6F8B38C5E6} = {75AFA6AF-99E2-4706-848D-E63C781D17A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2792867D-7CAD-41AF-B4DB-38962B4BFAAF}

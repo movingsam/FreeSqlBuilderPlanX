@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Autofac;
+using Autofac.Core;
+using FreeSqlBuilderPlanX.Infrastructure.Reflections;
 using FreeSqlBuilderPlanX.Infrastructure.Sessions;
+using FreeSqlBuilderPlanX.Infrastructure.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac
@@ -20,6 +23,15 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             services.AddSingleton<ISession, Session>();
+            var finder = new Finder();
+            services.AddSingleton<IFind>(x => finder);
+            Reflection.FindTypes<IModules>(finder.GetAssemblies().ToArray()).ForEach(module =>
+            {
+                if (!string.IsNullOrWhiteSpace(module?.FullName))
+                {
+                    (module.Assembly.CreateInstance(module.FullName) as IModules)?.Configure(services);
+                }
+            });
             return Bootstrapper.Run(services);
         }
 
@@ -31,7 +43,16 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac
         {
             if (containerBuilder == null)
                 throw new ArgumentNullException(nameof(containerBuilder));
-            return Ioc.DefaultContainer.CreateServiceProvider(containerBuilder);
+            var serviceProvider = Ioc.DefaultContainer.CreateServiceProvider(containerBuilder);
+            var finder = serviceProvider.GetService<IFind>();
+            Reflection.FindTypes<IModules>(finder.GetAssemblies().ToArray()).ForEach(module =>
+            {
+                if (!string.IsNullOrWhiteSpace(module?.FullName))
+                {
+                    (module.Assembly.CreateInstance(module.FullName) as IModules)?.CreateServiceProvider(serviceProvider);
+                }
+            });
+            return serviceProvider;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
         {
             service.AddSingleton(f =>
             {
-                var current = f.GetService<FreeSqlCollectionConfig>().FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name) ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
+                var current = f.GetService<FreeSqlCollectionConfig>().FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name).Value ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
                                   $"appSettings.json文件未检测到{typeof(T).Name}对象");
                 var builder = new FreeSqlBuilder()
                     .UseConnectionString(current.DataType, current.MasterConnection)
@@ -90,7 +90,6 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
                             e.Value = userId;
                             break;
                     }
-
                     break;
                 case FreeSql.Aop.AuditValueType.Insert:
                     switch (e.Column.CsName)

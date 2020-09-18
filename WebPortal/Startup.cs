@@ -8,13 +8,21 @@ using FreeSqlBuilderUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NetPro.Swagger;
 
 namespace WebPortal
 {
     public class Startup
     {
+        private readonly IConfiguration configuration;
+        public Startup(IConfiguration config)
+        {
+            configuration = config;
+
+        }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -25,6 +33,7 @@ namespace WebPortal
                 x.DbSet.DbType = DataType.Sqlite;
                 x.DbSet.ConnectionString = "Data Source=fsbuilder.db;Version=3";
             });
+            services.AddNetProSwagger(configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +47,7 @@ namespace WebPortal
                 //o.IndexStream=()=> typeof(BuilderUIOptions).GetTypeInfo().Assembly
                 //    .GetManifestResourceStream("FreeSql.GeneratorUI.dist.index.html");//如果想要自己编写前端UI可以通过修改这个配置来完成前端替换
             });//使用FreeSqlBuilderUI
+            app.UseNetProSwagger();
             //调试前端项目可以注释掉FreeSqlBuilderUI并取消下面注释
             //app.UseMvc();
             //app.UseSpa(x => x.UseProxyToSpaDevelopmentServer("http://localhost:4200"));

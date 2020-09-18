@@ -34,8 +34,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Exceptions
             string exceptionPrompt = ExceptionPrompt.GetExceptionPrompt(exception);
             if (!string.IsNullOrWhiteSpace(exceptionPrompt))
                 return exceptionPrompt;
-            Warning warning = exception as Warning;
-            if (warning != null)
+            if (exception is Warning warning)
                 return warning.Message;
             if (Web.Environment.IsDevelopment() || ExceptionPrompt.IsShowSystemException)
                 return exception.Message;

@@ -65,7 +65,7 @@ namespace @(Model.GetNameSpace())
         }
         @($"{table.Comment}修改".GetCSharpSummary())
         [HttpPut]
-        public @actionResult Update(@pageRequest request)
+        public @actionResult Update(@requestDto request)
         {
             var res= await _service.Update@(Model.CurrentTable.CsName)(request);
             return Success(res);

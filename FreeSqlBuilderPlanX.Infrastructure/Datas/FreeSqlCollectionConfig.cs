@@ -12,17 +12,14 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
         /// <summary>
         /// FreeSql配置
         /// </summary>
-        public List<FreeSqlConfig> FreeSqlConfigs { get; set; }
+        public IDictionary<string, FreeSqlConfig> FreeSqlConfigs { get; set; }
     }
     /// <summary>
     /// FreeSql配置
     /// </summary>
     public class FreeSqlConfig
     {
-        /// <summary>
-        /// 数据库名称
-        /// </summary>
-        public string Key { get; set; }
+
         /// <summary>
         /// 主库
         /// </summary>

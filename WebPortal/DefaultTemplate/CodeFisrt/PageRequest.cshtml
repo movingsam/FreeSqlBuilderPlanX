@@ -24,7 +24,7 @@ namespace @Model.GetNameSpace()
         @foreach (var column in table.Properties)
         {
         @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
-        @:public  @Reflection.ToCsType(column.Value.PropertyType) @column.Value.Name { get; set; }
+        @:public  @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
         }
         @("关键词".GetCSharpSummary())
         public string Keyword { get; set; }
