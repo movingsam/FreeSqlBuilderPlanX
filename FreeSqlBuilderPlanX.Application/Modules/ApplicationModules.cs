@@ -14,8 +14,7 @@ namespace FreeSqlBuilderPlanX.Application.Modules
         }
 
         public void CreateServiceProvider(IServiceProvider serviceProvider)
-        {
-            throw new NotImplementedException();
+        { 
         }
     }
 }

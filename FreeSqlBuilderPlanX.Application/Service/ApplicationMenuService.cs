@@ -70,19 +70,12 @@ namespace FreeSqlBuilderPlanX.Application.Service
         {
             var datas = await Repository
                                 .Select
-                                .WhereIf(request.Id != null, x => x.Id == request.Id)
-                                .WhereIf(request.Version != null, x => x.Version == request.Version)
-                                .WhereIf(request.Level != null, x => x.Level == request.Level)
                                 .WhereIf(request.ParentId != null, x => x.ParentId == request.ParentId)
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.NodePath), x => x.NodePath.Contains(request.NodePath))
-                                .WhereIf(request.IsDeleted != null, x => x.IsDeleted == request.IsDeleted)
-                                .WhereIf(request.Enabled != null, x => x.Enabled == request.Enabled)
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Name), x => x.Name.Contains(request.Name))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Title), x => x.Title.Contains(request.Title))
-                                .WhereIf(request.IsHidden != null, x => x.IsHidden == request.IsHidden)
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Icon), x => x.Icon.Contains(request.Icon))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Path), x => x.Path.Contains(request.Path))
-
                                 .Count(out var total)
                                 .Page(request.PageNumber, request.PageSize)
                                 .ToListAsync();

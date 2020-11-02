@@ -23,7 +23,6 @@ namespace FreeSqlBuilderPlanX.Application.IService
         /// 新增
         ///</summary>
         Task<bool> NewRole(RoleRequestDto request);
-
         ///<summary>
         /// 修改
         ///</summary>
@@ -36,8 +35,6 @@ namespace FreeSqlBuilderPlanX.Application.IService
         /// 分页查询
         ///</summary>
         Task<RolePageViewDto> QueryRolePage(RolePageRequest request);
-
-
         ///<summary>
         /// 查询
         ///</summary>

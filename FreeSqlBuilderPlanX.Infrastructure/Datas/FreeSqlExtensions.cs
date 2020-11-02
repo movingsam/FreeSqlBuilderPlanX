@@ -23,7 +23,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
             service.AddSingleton(f =>
             {
                 var current = f.GetService<FreeSqlCollectionConfig>().FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name).Value ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
-                                  $"appSettings.json文件未检测到{typeof(T).Name}对象");
+                                  $"appSettings.json文件未检测到FreeSql的Key为:{typeof(T).Name}的对象");
                 var builder = new FreeSqlBuilder()
                     .UseConnectionString(current.DataType, current.MasterConnection)
                     .UseAutoSyncStructure(current.IsSyncStructure);

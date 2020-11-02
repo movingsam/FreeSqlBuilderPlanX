@@ -66,19 +66,11 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<ApplicationUserPageViewDto> QueryApplicationUserPage(ApplicationUserPageRequest request)
         {
             var datas = await Repository
-                                .Select.IncludeMany(app => app.Roles)
-                                .WhereIf(request.Id != null, x => x.Id == request.Id)
-                                .WhereIf(request.Version != null, x => x.Version == request.Version)
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.CreateBy), x => x.CreateBy.Contains(request.CreateBy))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.UpdateBy), x => x.UpdateBy.Contains(request.UpdateBy))
-                                .WhereIf(request.IsDeleted != null, x => x.IsDeleted == request.IsDeleted)
+                                .Select
+                                .IncludeMany(app => app.Roles)
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.UserName), x => x.UserName.Contains(request.UserName))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.HashPassword), x => x.HashPassword.Contains(request.HashPassword))
-                                .WhereIf(request.Birthday != null, x => x.Birthday == request.Birthday)
-                                .WhereIf(request.Gender != null, x => x.Gender == request.Gender)
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Email), x => x.Email.Contains(request.Email))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Phone), x => x.Phone.Contains(request.Phone))
-
                                 .Count(out var total)
                                 .Page(request.PageNumber, request.PageSize)
                                 .ToListAsync();
