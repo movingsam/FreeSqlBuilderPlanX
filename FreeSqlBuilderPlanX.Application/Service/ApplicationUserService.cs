@@ -6,12 +6,22 @@
 using FreeSqlBuilderPalanX.Application.Entity;
 using FreeSqlBuilderPlanX.Application.DbContext;
 using FreeSqlBuilderPlanX.Application.Dto.ApplicationUser;
+using FreeSqlBuilderPlanX.Application.Dto.Login;
 using FreeSqlBuilderPlanX.Application.IService;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using FreeSqlBuilderPlanX.Infrastructure.Cache;
+using FreeSqlBuilderPlanX.Infrastructure.Consts;
+using FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac;
+using FreeSqlBuilderPlanX.Infrastructure.Security;
+using FreeSqlBuilderPlanX.Infrastructure.Utils;
+using GIMS.Infrastructure.Cache;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FreeSqlBuilderPlanX.Application.Service
 {
@@ -19,14 +29,16 @@ namespace FreeSqlBuilderPlanX.Application.Service
     ///<summary>
     /// 服务
     ///</summary>
-    public class ApplicationUserService : ServiceBase<ApplicationUser, ApplicationContext>, IApplicationUserIService
+    public class ApplicationUserService : ServiceBase<ApplicationUser, ApplicationContext>, IApplicationUserIService, ILoginService, ISessionStore
     {
+        private readonly ICache _cache;
 
         ///<summary>
         /// 构造函数
         ///</summary>
         public ApplicationUserService(IServiceProvider service, ILogger<ApplicationUserService> logger) : base(service, logger)
         {
+            _cache = service.GetService<ICache>();
         }
 
 
@@ -90,6 +102,62 @@ namespace FreeSqlBuilderPlanX.Application.Service
                                        .ToOneAsync();
             var view = Mapper.Map<ApplicationUserDto>(data);
             return view;
+        }
+
+        public async Task<LoginResponse> Login(LoginRequest request)
+        {
+            var response = new LoginResponse();
+            var hashPassword = request.Password.GetMd5Hash();
+            var user = await Repository.Select
+                .IncludeMany(x => x.Roles)
+                .Where(x => x.UserName == request.UserId).ToOneAsync();
+            if (user == null)
+            {
+                response.Result = LoginResult.NoUser;
+                return response;
+            }
+            if (user.HashPassword != hashPassword)
+            {
+                response.Result = LoginResult.PasswordError;
+                return response;
+            }
+            response.JwtResult = GetJwt(user);
+            return response;
+        }
+
+        private JwtResult GetJwt(ApplicationUser user)
+        {
+            var id = new ClaimsIdentity(SysConsts.WEB_COOKIES_NAME);
+            id.AddClaims(new Claim[] {
+                new Claim( "UserId", user.Id.ToString()),
+            });
+            var jwtSetting = Ioc.Create<JwtSetting>();
+            var token = new JwtSecurityToken(
+                issuer: jwtSetting.Issuer,
+                audience: jwtSetting.Audience,
+                signingCredentials: jwtSetting.Credentials,
+                claims: id.Claims,
+                notBefore: DateTime.Now,
+                expires: DateTime.Now.AddSeconds(jwtSetting.ExpireSeconds)
+            );
+            var refreshToken = $"{user.Id.ToString()}{DateTime.UtcNow}".GetMd5Hash();
+            _cache.SetAsync(string.Format(CacheKeyTemplate.UserSession, user.Id), user, new TimeSpan(0, 0, 0, 1 * 60 * 60));
+            return new JwtResult()
+            {
+                Duration = new DateTime().AddSeconds(1 * 60 * 60),
+                RefreshToken = refreshToken,
+                Token = new JwtSecurityTokenHandler().WriteToken(token)
+            };
+        }
+
+        public Task<bool> LogOut(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ApplicationUserDto> GetCurrentUser()
+        {
+            throw new NotImplementedException();
         }
     }
 }

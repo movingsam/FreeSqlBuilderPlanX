@@ -14,11 +14,6 @@ namespace FreeSqlBuilderPlanX.Application.IService
         /// <param name="request"></param>
         /// <returns></returns>
         Task<LoginResponse> Login(LoginRequest request);
-        /// <summary>
-        /// 获取当前用户
-        /// </summary>
-        /// <returns></returns>
-        Task<ApplicationUserDto> GetCurrentUser();
 
         /// <summary>
         /// 通过UserID登出

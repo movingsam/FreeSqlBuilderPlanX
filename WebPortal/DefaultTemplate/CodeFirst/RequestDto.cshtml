@@ -1,5 +1,7 @@
 ﻿@using FreeSqlBuilder.TemplateEngine.Utilities
 @using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilderPlanX.Core
+@using FreeSqlBuilderPlanX.Core.Base
 
 @model FreeSqlBuilder.TemplateEngine.IBuilderTask
 @{
@@ -7,6 +9,10 @@
     var table = Model.CurrentTable;
     string GetColumnAttribute(string key)=>table.Columns.FirstOrDefault(x => x.Key == key).Value.RequestDtoGetAttribute(0);
     var currentBuilder = Model.CurrentBuilder;
+    var ignore = new string[] { nameof(IKey.Id),nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled)
+        ,nameof(IUpdate.UpdateBy),nameof(IUpdate.UpdateDate),nameof(ICreate.CreateBy)
+        ,nameof(ICreate.CreateDate)
+    };
 }
 
 using System.Collections;
@@ -22,6 +28,10 @@ namespace @Model.GetNameSpace()
     {
         @foreach (var column in table.Properties)
         {
+            @if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+             {
+                 continue;
+             }
         @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
         @GetColumnAttribute(column.Key)
         @:public @currentBuilder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }

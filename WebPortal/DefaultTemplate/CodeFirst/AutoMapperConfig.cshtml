@@ -1,0 +1,30 @@
+﻿@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@model FreeSqlBuilder.TemplateEngine.IBuilderTask
+@{
+    Layout = "../Share/_Layout.cshtml";
+    var table = Model.CurrentTable;//当前执行表
+    var builder = Model.CurrentBuilder;//当前执行构建器
+    var dtoNames = new[] { "Dto", "RequestDto", "PageViewDto", "PageRequest" };
+    var dtoBuilder = Model.Project.Builders.FirstOrDefault(x => x.Name == "Dto");
+    var requestBuilder = Model.Project.Builders.FirstOrDefault(x => x.Name == "RequestDto");
+}
+ 
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using AutoMapper;
+
+namespace @Model.GetNameSpace()
+{
+    public class @Model.GetCodeFirstName():Profile
+    {
+        public @Model.GetCodeFirstName()@("()"){
+
+        @($"CreateMap<{table.Type.FullName},{dtoBuilder.GetName(table.CsName)}>();")
+
+        @($"CreateMap<{requestBuilder.GetName(table.CsName)},{table.Type.FullName}>();")
+
+        }
+    }
+}

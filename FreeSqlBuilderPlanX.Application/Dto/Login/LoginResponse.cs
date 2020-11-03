@@ -5,10 +5,6 @@ namespace FreeSqlBuilderPlanX.Application.Dto.Login
     public class LoginResponse
     {
         /// <summary>
-        /// 入参
-        /// </summary>
-        public LoginRequest Request { get; set; }
-        /// <summary>
         /// 结果
         /// </summary>
         public LoginResult Result { get; set; }

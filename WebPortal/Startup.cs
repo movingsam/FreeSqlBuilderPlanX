@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FreeSql;
 using FreeSqlBuilder;
+using FreeSqlBuilderPlanX.Infrastructure.Utils;
 using FreeSqlBuilderUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,11 +18,9 @@ namespace WebPortal
 {
     public class Startup
     {
-        private readonly IConfiguration configuration;
         public Startup(IConfiguration config)
         {
-            configuration = config;
-
+            Configuration.Init(config);
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -33,14 +32,14 @@ namespace WebPortal
                 x.DbSet.DbType = DataType.Sqlite;
                 x.DbSet.ConnectionString = "Data Source=fsbuilder.db;Version=3";
             });
-            services.AddNetProSwagger(configuration);
+            services.AddNetProSwagger(Configuration.Configurations);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //导入默认模板取下面注释
-            //app.UseDefaultTemplateImport();//初次启动导入模板
+            app.UseDefaultTemplateImport();//初次启动导入模板
             app.UseFreeSqlBuilderUI(o =>
             {
                 o.Path = "FreeSqlBuilder";//默认地址为FsGen

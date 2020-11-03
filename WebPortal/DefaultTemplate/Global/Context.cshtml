@@ -2,7 +2,7 @@
 @using FreeSqlBuilder.TemplateEngine.Utilities
 @model FreeSqlBuilder.TemplateEngine.IBuilderTask
 @{
-    Layout = "../../Share/_Layout.cshtml";
+    Layout = "../Share/_Layout.cshtml";
     var table = Model.CurrentTable;//当前执行表
     var builder = Model.CurrentBuilder;//当前执行构建器
     var nameSpace = Model.Project.ProjectInfo.NameSpace.Split(".").Last();

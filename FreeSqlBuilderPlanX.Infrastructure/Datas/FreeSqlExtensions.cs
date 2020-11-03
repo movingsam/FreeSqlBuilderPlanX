@@ -5,6 +5,8 @@ using FreeSqlBuilderPlanX.Core.Base;
 using FreeSqlBuilderPlanX.Infrastructure.Consts;
 using FreeSqlBuilderPlanX.Infrastructure.Datas.UnitOfWork;
 using FreeSqlBuilderPlanX.Infrastructure.Sessions;
+using FreeSqlBuilderPlanX.Infrastructure.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +24,9 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
         {
             service.AddSingleton(f =>
             {
-                var current = f.GetService<FreeSqlCollectionConfig>().FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name).Value ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
+                var configuration = f.GetService<IConfiguration>();
+                var freeSqlconfigCollection = configuration.GetSection(nameof(FreeSqlCollectionConfig)).Get<FreeSqlCollectionConfig>();
+                var current = freeSqlconfigCollection?.FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name).Value ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
                                   $"appSettings.json文件未检测到FreeSql的Key为:{typeof(T).Name}的对象");
                 var builder = new FreeSqlBuilder()
                     .UseConnectionString(current.DataType, current.MasterConnection)

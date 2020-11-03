@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Autofac;
 using Autofac.Core;
+using AutoMapper;
+using FreeSqlBuilderPlanX.Infrastructure.Datas.UnitOfWork;
 using FreeSqlBuilderPlanX.Infrastructure.Reflections;
 using FreeSqlBuilderPlanX.Infrastructure.Sessions;
 using FreeSqlBuilderPlanX.Infrastructure.Utils;
@@ -25,6 +27,11 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac
             services.AddSingleton<ISession, Session>();
             var finder = new Finder();
             services.AddSingleton<IFind>(x => finder);
+            services.AddScoped<IUnitOfWorkManager, UnitOfWorkManager>();
+            if (Configuration.Configurations != null)
+            {
+                services.AddSingleton(Configuration.Configurations);
+            }
             Reflection.FindTypes<IModules>(finder.GetAssemblies().ToArray()).ForEach(module =>
             {
                 if (!string.IsNullOrWhiteSpace(module?.FullName))
@@ -52,6 +59,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac
                     (module.Assembly.CreateInstance(module.FullName) as IModules)?.CreateServiceProvider(serviceProvider);
                 }
             });
+            Web.Init(serviceProvider);
             return serviceProvider;
         }
     }

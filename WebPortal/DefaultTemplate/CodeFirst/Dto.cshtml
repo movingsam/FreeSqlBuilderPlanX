@@ -1,10 +1,15 @@
 ﻿@using FreeSqlBuilder.Core.Utilities
 @using FreeSqlBuilder.TemplateEngine.Utilities
+@using FreeSqlBuilderPlanX.Core.Base
 @model FreeSqlBuilder.TemplateEngine.IBuilderTask
 @{
     Layout = "../Share/_Layout.cshtml";
     var table = Model.CurrentTable;//当前执行表
     var builder = Model.CurrentBuilder;//当前执行构建器
+    var ignore = new string[] { nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled)
+        ,nameof(IUpdate.UpdateBy),nameof(IUpdate.UpdateDate),nameof(ICreate.CreateBy)
+        ,nameof(ICreate.CreateDate)
+    };
 }
 
 @Model.GetUsing()
@@ -18,9 +23,12 @@ namespace @Model.GetNameSpace()
     {
     @foreach (var column in table.Properties)
     {
-        @(table.Columns?.FirstOrDefault(x=>x.Value.CsName == column.Key).Value?.RequestDtoGetAttribute())
+        @if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+        {
+            continue;
+        }
         @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
         @:public @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
     }
     }
-}
+    }
