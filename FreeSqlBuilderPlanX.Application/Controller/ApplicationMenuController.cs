@@ -1,12 +1,12 @@
 //*******************************
 // 创建者 Movingsam
-// 创建日期 2020-09-16 12:41
+// 创建日期 2020-11-06 18:05
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
-using FreeSqlBuilderPlanX.Application.Dto.ApplicationMenu;
 using FreeSqlBuilderPlanX.Application.IService;
-using FreeSqlBuilderPlanX.Infrastructure.Controller;
+using FreeSqlBuilderPlanX.Web.Controller;
+using FreeSqlBuilderPlanX.Web.Dto.ApplicationMenu;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -55,7 +55,7 @@ namespace FreeSqlBuilderPlanX.Application.Controller
         /// 新增
         ///</summary>
         [HttpPost]
-        public async Task<IActionResult> New(ApplicationMenuRequestDto request)
+        public async Task<IActionResult> New([FromBody]ApplicationMenuRequestDto request)
         {
             var res= await _service.NewApplicationMenu(request);
             return Success(res);
@@ -65,7 +65,7 @@ namespace FreeSqlBuilderPlanX.Application.Controller
         /// 修改
         ///</summary>
         [HttpPut]
-        public async Task<IActionResult> Update(ApplicationMenuRequestDto request)
+        public async Task<IActionResult> Update([FromBody]ApplicationMenuRequestDto request)
         {
             var res= await _service.UpdateApplicationMenu(request);
             return Success(res);

@@ -3,16 +3,18 @@
 // 创建日期 2020-09-16 12:42
 // 创建引擎 FreeSqlBuilder
 //*******************************
-using FreeSqlBuilderPalanX.Application.Entity;
+
 using FreeSqlBuilderPlanX.Application.DbContext;
 using FreeSqlBuilderPlanX.Application.Dto.ApplicationMenu;
+using FreeSqlBuilderPlanX.Application.Entity;
 using FreeSqlBuilderPlanX.Application.IService;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using FreeSqlBuilderPlanX.Web.Dto.ApplicationMenu;
 
 namespace FreeSqlBuilderPlanX.Application.Service
 {
@@ -38,7 +40,6 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<bool> NewApplicationMenu(ApplicationMenuRequestDto dto)
         {
             var entity = Mapper.Map<ApplicationMenu>(dto);
-            var dbSet = _freeSql.CreateDbContext().Set<ApplicationUser>();
             await Repository.InsertAsync(entity);
             await UowManager.CommitAsync();
             return true;
@@ -70,17 +71,16 @@ namespace FreeSqlBuilderPlanX.Application.Service
         {
             var datas = await Repository
                                 .Select
-                                .WhereIf(request.ParentId != null, x => x.ParentId == request.ParentId)
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.NodePath), x => x.NodePath.Contains(request.NodePath))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Name), x => x.Name.Contains(request.Name))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Title), x => x.Title.Contains(request.Title))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Icon), x => x.Icon.Contains(request.Icon))
                                 .WhereIf(!string.IsNullOrWhiteSpace(request.Path), x => x.Path.Contains(request.Path))
+                                .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
                                 .Count(out var total)
                                 .Page(request.PageNumber, request.PageSize)
                                 .ToListAsync();
             var views = Mapper.Map<List<ApplicationMenuDto>>(datas);
-            var page = new ApplicationMenuPageViewDto(views, total, request.PageNumber, request.PageSize);
+            var page = new ApplicationMenuPageViewDto(views, request,total);
             return page;
         }
 

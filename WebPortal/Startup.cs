@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FreeSql;
 using FreeSqlBuilder;
+using FreeSqlBuilderPlanX.Infrastructure.Exceptions;
 using FreeSqlBuilderPlanX.Infrastructure.Utils;
-using FreeSqlBuilderUI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using NetPro.Swagger;
+using System;
 
 namespace WebPortal
 {
@@ -20,6 +15,8 @@ namespace WebPortal
     {
         public Startup(IConfiguration config)
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+            ExceptionPrompt.IsShowSystemException = true;
             Configuration.Init(config);
         }
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -38,6 +35,7 @@ namespace WebPortal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAuthorization();
             //导入默认模板取下面注释
             app.UseDefaultTemplateImport();//初次启动导入模板
             app.UseFreeSqlBuilderUI(o =>

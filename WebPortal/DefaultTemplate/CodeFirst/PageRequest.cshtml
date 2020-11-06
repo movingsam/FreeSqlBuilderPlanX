@@ -1,37 +1,42 @@
-﻿@using FreeSqlBuilder.TemplateEngine.Utilities
+﻿@using AutoMapper.Internal
+@using FreeSqlBuilder.TemplateEngine.Utilities
 @using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilderPlanX.Core
+@using FreeSqlBuilderPlanX.Core.Base
 
 @model FreeSqlBuilder.TemplateEngine.IBuilderTask
 @{
-    Layout = "../Share/_Layout.cshtml"; 
+    Layout = "../Share/_Layout.cshtml";
     var table = Model.CurrentTable;
     var builder = Model.CurrentBuilder;
     var nameSpace = Model.Project.ProjectInfo.NameSpace;
     var navigates = table.Properties.Keys.Except(table.Columns.Keys);
-
+    var ignore = new string[]
+    {
+        nameof(IKey.Id), nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled)
+        , nameof(IUpdate.UpdateBy), nameof(IUpdate.UpdateDate), nameof(ICreate.CreateBy)
+        , nameof(ICreate.CreateDate),"Children","Parent","ParentId","NodePath"
+    };
 }
 
 using System.Collections;
 using System.Collections.Generic;
-using FreeSql.DataAnnotations;
-@Model.GetUsing()
+using FreeSqlBuilderPlanX.Core.Base;
 
 namespace @Model.GetNameSpace()
 {
     @($"{table.Comment}-分页请求".GetCSharpSummary())
-    public class @Model.GetCodeFirstName()
+    public class @Model.GetCodeFirstName() : PageRequest
     {
         @foreach (var column in table.Properties)
         {
+            @if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key) || column.Value.PropertyType.IsCollectionType())
+             {
+                 continue;
+             }
         @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
-        @:public  @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
+        @:public @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
         }
-        @("关键词".GetCSharpSummary())
-        public string Keyword { get; set; }
-        @("页号".GetCSharpSummary())
-        public int PageNumber { get; set; }
-        @("页码".GetCSharpSummary())
-        public int PageSize { get; set;}
      }
 }
 

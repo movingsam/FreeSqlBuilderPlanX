@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using FreeSql.DataAnnotations;
+﻿using FreeSql.DataAnnotations;
+using FreeSqlBuilderPlanX.Core;
 using FreeSqlBuilderPlanX.Core.Base;
+using System;
+using System.Collections.Generic;
 
-namespace FreeSqlBuilderPalanX.Application.Entity
+namespace FreeSqlBuilderPlanX.Application.Entity
 {
     /// <summary>
     /// 用户
@@ -37,11 +37,8 @@ namespace FreeSqlBuilderPalanX.Application.Entity
         public string Phone { get; set; }
 
         [Navigate(ManyToMany = typeof(UserRole))]
-        public ICollection<Role> Roles { get; set; }
+        public ICollection<Role> Roles { get; set; } = new List<Role>();
     }
 
-    public enum Gender
-    {
-        Male, FeMal
-    }
+   
 }

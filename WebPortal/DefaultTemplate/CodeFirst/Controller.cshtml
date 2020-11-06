@@ -58,14 +58,14 @@ namespace @(Model.GetNameSpace())
         }
         @($"{table.Comment}新增".GetCSharpSummary())
         [HttpPost]
-        public @actionResult New(@requestDto request)
+        public @actionResult New([FromBody]@requestDto request)
         {
             var res= await _service.New@(Model.CurrentTable.CsName)(request);
             return Success(res);
         }
         @($"{table.Comment}修改".GetCSharpSummary())
         [HttpPut]
-        public @actionResult Update(@requestDto request)
+        public @actionResult Update([FromBody]@requestDto request)
         {
             var res= await _service.Update@(Model.CurrentTable.CsName)(request);
             return Success(res);

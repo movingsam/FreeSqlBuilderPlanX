@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FreeSqlBuilderPalanX.Application.Entity\FreeSqlBuilderPlanX.Application.Entity.csproj" />
-    <ProjectReference Include="..\FreeSqlBuilderPlanX.Infrastructure\FreeSqlBuilderPlanX.Infrastructure.csproj" />
+    <ProjectReference Include="..\FreeSqlBuilderPlanX.Web\FreeSqlBuilderPlanX.Web.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@
     var currentBuilder = Model.CurrentBuilder;
     var ignore = new string[] { nameof(IKey.Id),nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled)
         ,nameof(IUpdate.UpdateBy),nameof(IUpdate.UpdateDate),nameof(ICreate.CreateBy)
-        ,nameof(ICreate.CreateDate)
+        ,nameof(ICreate.CreateDate),"Children","Parent","ParentId","NodePath"
     };
 }
 

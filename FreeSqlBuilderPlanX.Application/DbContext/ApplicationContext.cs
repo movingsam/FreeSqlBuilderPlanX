@@ -5,7 +5,6 @@
 //*******************************
 using System;
 using System.Collections.Generic;
-using FreeSqlBuilderPalanX.Application.Entity;
 
 
 namespace FreeSqlBuilderPlanX.Application.DbContext

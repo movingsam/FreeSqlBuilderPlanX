@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>4f0e1aae-632a-4be5-8f3c-0a9962abdc3a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,8 @@
     <ProjectReference Include="..\..\FreeSqlBuilder\src\FreeSqlBuilderUI\FreeSqlBuilderUI\FreeSqlBuilderUI.csproj" />
     <ProjectReference Include="..\..\FreeSqlBuilder\src\FreeSqlBuilder\FreeSqlBuilder\FreeSqlBuilder.csproj" />
     <ProjectReference Include="..\FreeSqlBuilderPlanX.Application\FreeSqlBuilderPlanX.Application.csproj" />
+    <ProjectReference Include="..\FreeSqlBuilderPlanX.EventBus\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
+    <ProjectReference Include="..\FreeSqlBuilderPlanX.EventBus\EventBus\EventBus.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,6 +20,7 @@
         {
             var datas =await Repository
                                 .Select@(includeStr)@(whereIf)
+                                .OrderByPropertyName(request.OrderBy.PropertyName, request.OrderBy.IsAscending)
                                 .Count(out var total)
                                 .Page(request.PageNumber, request.PageSize)
                                 .ToListAsync();

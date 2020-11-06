@@ -3,22 +3,18 @@ using System.Collections.Generic;
 
 namespace FreeSqlBuilderPlanX.Core.Base
 {
-    public class PageViewBase<TDto, TKey> : IPage where TDto : DtoBase<TKey>
+    public class PageViewBase<TDto, TKey> : Page where TDto : DtoBase<TKey>
     {
         public PageViewBase(IEnumerable<TDto> list, IPage page, long total)
         {
             List = list;
             PageSize = page.PageSize;
             PageNumber = page.PageNumber;
-            Total = total;
-            OrderBy = page.OrderBy;
+            OrderByString = page.OrderByString;
+            Total = total;  
         }
-
         public IEnumerable<TDto> List { get; }
-        public int PageSize { get; }
-        public int PageNumber { get; }
         public long Total { get; }
-        public string OrderBy { get; }
     }
 
     public class PageViewBase<TDto> : PageViewBase<TDto, Guid> where TDto : DtoBase

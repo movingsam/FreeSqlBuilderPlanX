@@ -3,15 +3,17 @@
 // 创建日期 2020-09-16 12:42
 // 创建引擎 FreeSqlBuilder
 //*******************************
-using FreeSqlBuilderPalanX.Application.Entity;
+
 using FreeSqlBuilderPlanX.Application.DbContext;
 using FreeSqlBuilderPlanX.Application.Dto.Role;
+using FreeSqlBuilderPlanX.Application.Entity;
 using FreeSqlBuilderPlanX.Application.IService;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FreeSqlBuilderPlanX.Web.Dto.Role;
 
 namespace FreeSqlBuilderPlanX.Application.Service
 {
@@ -66,21 +68,16 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<RolePageViewDto> QueryRolePage(RolePageRequest request)
         {
             var datas = await Repository
-                                .Select.IncludeMany(rol => rol.Users)
-                                .WhereIf(request.Id != null, x => x.Id == request.Id)
-                                .WhereIf(request.Version != null, x => x.Version == request.Version)
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.CreateBy), x => x.CreateBy.Contains(request.CreateBy))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.UpdateBy), x => x.UpdateBy.Contains(request.UpdateBy))
-                                .WhereIf(request.IsDeleted != null, x => x.IsDeleted == request.IsDeleted)
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.Name), x => x.Name.Contains(request.Name))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.Code), x => x.Code.Contains(request.Code))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.Descriptions), x => x.Descriptions.Contains(request.Descriptions))
-
-                                .Count(out var total)
-                                .Page(request.PageNumber, request.PageSize)
-                                .ToListAsync();
+                .Select.IncludeMany(rol => rol.Users)
+                .WhereIf(!string.IsNullOrWhiteSpace(request.Name), x => x.Name.Contains(request.Name))
+                .WhereIf(!string.IsNullOrWhiteSpace(request.Code), x => x.Code.Contains(request.Code))
+                .WhereIf(!string.IsNullOrWhiteSpace(request.Descriptions), x => x.Descriptions.Contains(request.Descriptions))
+                .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
+                .Count(out var total)
+                .Page(request.PageNumber, request.PageSize)
+                .ToListAsync();
             var views = Mapper.Map<List<RoleDto>>(datas);
-            var page = new RolePageViewDto(views, total, request.PageNumber, request.PageSize);
+            var page = new RolePageViewDto(views, request, total);
             return page;
         }
 

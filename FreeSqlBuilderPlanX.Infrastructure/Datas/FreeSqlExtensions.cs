@@ -25,13 +25,12 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
             service.AddSingleton(f =>
             {
                 var configuration = f.GetService<IConfiguration>();
-                var freeSqlconfigCollection = configuration.GetSection(nameof(FreeSqlCollectionConfig)).Get<FreeSqlCollectionConfig>();
-                var current = freeSqlconfigCollection?.FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name).Value ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
+                var freeSqlConfigCollection = configuration.GetSection(nameof(FreeSqlCollectionConfig)).Get<FreeSqlCollectionConfig>();
+                var current = freeSqlConfigCollection?.FreeSqlConfigs?.FirstOrDefault(x => x.Key == typeof(T).Name).Value ?? throw new ArgumentNullException(nameof(FreeSqlCollectionConfig),
                                   $"appSettings.json文件未检测到FreeSql的Key为:{typeof(T).Name}的对象");
                 var builder = new FreeSqlBuilder()
                     .UseConnectionString(current.DataType, current.MasterConnection)
                     .UseAutoSyncStructure(current.IsSyncStructure);
-
                 if (current.SlaveConnections.Count > 0)
                 {
                     builder.UseSlave(current.SlaveConnections.ToArray());
@@ -46,7 +45,12 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
 
             service.AddScoped<IUnitOfWork<T>, UnitOfWork<T>>();
         }
-
+        /// <summary>
+        /// CURD之后监控事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <param name="logger"></param>
         private static void Aop_CurdAfter(object sender, FreeSql.Aop.CurdAfterEventArgs e, ILogger logger)
         {
             logger.LogInformation("==============================FreeSql 日 志 ==============================");
@@ -77,13 +81,17 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
                 logger.LogError($"错误信息:{e.Exception.Message}");
             }
         }
-
+        /// <summary>
+        /// Aop审核数据事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <param name="service"></param>
         private static void Aop_Auditer(object sender, FreeSql.Aop.AuditValueEventArgs e, IServiceProvider service)
         {
             var userId = service.GetService<ISession>()?.UserId ?? "当前用户未登录";
             switch (e.AuditValueType)
             {
-
                 case FreeSql.Aop.AuditValueType.Update:
                     switch (e.Column.CsName)
                     {
@@ -105,7 +113,6 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas
                             e.Value = userId;
                             break;
                     }
-
                     break;
             }
         }

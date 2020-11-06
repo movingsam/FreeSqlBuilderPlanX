@@ -1,6 +1,6 @@
 ﻿using FreeSqlBuilderPlanX.Core.Base;
 
-namespace FreeSqlBuilderPalanX.Application.Entity
+namespace FreeSqlBuilderPlanX.Application.Entity
 {
     public class ApplicationMenu : TreeEntityBase<ApplicationMenu, long, long?>
     {

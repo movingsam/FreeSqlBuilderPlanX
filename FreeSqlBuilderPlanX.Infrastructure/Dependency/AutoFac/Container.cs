@@ -46,14 +46,14 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac
 
         public object Create(Type type, string name = null)
         {
-            return Web.HttpContext?.RequestServices != null ? GetServiceFromHttpContext(type, name) : GetService(type, name);
+            return Utils.Web.HttpContext?.RequestServices != null ? GetServiceFromHttpContext(type, name) : GetService(type, name);
         }
         /// <summary>
         /// 从HttpContext获取服务
         /// </summary>
         private object GetServiceFromHttpContext(Type type, string name)
         {
-            var serviceProvider = Web.HttpContext.RequestServices;
+            var serviceProvider = Utils.Web.HttpContext.RequestServices;
             if (name == null)
                 return serviceProvider.GetService(type);
             var context = serviceProvider.GetService<IComponentContext>();

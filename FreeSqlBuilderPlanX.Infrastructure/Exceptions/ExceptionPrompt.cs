@@ -36,7 +36,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Exceptions
                 return exceptionPrompt;
             if (exception is Warning warning)
                 return warning.Message;
-            if (Web.Environment.IsDevelopment() || ExceptionPrompt.IsShowSystemException)
+            if (Utils.Web.Environment.IsDevelopment() || ExceptionPrompt.IsShowSystemException)
                 return exception.Message;
             return "系统异常";
         }

@@ -1,15 +1,19 @@
 ﻿@using FreeSqlBuilder.Core.Utilities
 @using FreeSqlBuilder.TemplateEngine.Utilities
+@using FreeSqlBuilderPlanX.Core
 @using FreeSqlBuilderPlanX.Core.Base
 @model FreeSqlBuilder.TemplateEngine.IBuilderTask
 @{
     Layout = "../Share/_Layout.cshtml";
     var table = Model.CurrentTable;//当前执行表
     var builder = Model.CurrentBuilder;//当前执行构建器
-    var ignore = new string[] { nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled)
+    var ignore = new string[] { nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled) , nameof(IKey.Id)
         ,nameof(IUpdate.UpdateBy),nameof(IUpdate.UpdateDate),nameof(ICreate.CreateBy)
         ,nameof(ICreate.CreateDate)
     };
+    var dtoBase = "DtoBase" +( table.Primarys.FirstOrDefault()?.CsType.Name == "Guid" ? ""
+        :
+        $"<{Reflection.ToCsType(table.Primarys.FirstOrDefault()?.CsType)}>");
 }
 
 @Model.GetUsing()
@@ -19,16 +23,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace @Model.GetNameSpace()
 {
-    public class @Model.GetCodeFirstName()
+    public class @Model.GetCodeFirstName() : @dtoBase
     {
-    @foreach (var column in table.Properties)
-    {
-        @if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+        @foreach (var column in table.Properties)
         {
-            continue;
+            @if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+            {
+                continue;
+            }
+            @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
+            @:public @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
         }
-        @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
-        @:public @builder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
     }
-    }
-    }
+}

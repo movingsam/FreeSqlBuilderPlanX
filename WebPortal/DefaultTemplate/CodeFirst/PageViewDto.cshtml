@@ -6,6 +6,9 @@
     var dtoBuilder = Model.Project.Builders.FirstOrDefault(x => x.Name == "Dto");
     var dataType = $"IEnumerable<{dtoBuilder?.GetName(table.CsName)}>";
     var dtoNameSpace = $"using {Model?.Project?.ProjectInfo?.NameSpace}.{dtoBuilder?.ReplaceTablePath(table.CsName).Replace("/",".")};";
+    var pkTypeStr = table.Primarys.FirstOrDefault()?.CsType.Name;
+    var tKey = pkTypeStr == "Guid" ? "" : $",{pkTypeStr}";
+    var pageViewDto = $"PageViewBase<{dtoBuilder?.GetName(table.CsName)}{tKey}>";
 }
 using System.Collections;
 using System.Collections.Generic;
@@ -16,22 +19,10 @@ using FreeSql.DataAnnotations;
 namespace @(Model.GetNameSpace())
 {
     @Model.CurrentTable.Comment.GetCSharpSummary()
-    public class @Model.GetCodeFirstName()
+    public class @Model.GetCodeFirstName() : @pageViewDto
     {
-        public @Model.GetCodeFirstName() (@dataType datas,long total,int pageNumber=1,int pageSize=10)
+        public @Model.GetCodeFirstName() (@dataType datas,IPage page,long total):base(datas,page,total)
         {
-            this.Datas = datas;
-            this.PageNumber = pageNumber;
-            this.PageSize = pageSize;
-            this.Total = total;
         }
-        @("分页数据".GetCSharpSummary())
-        public @dataType Datas { get; set;}
-        @("页号".GetCSharpSummary())
-        public int PageSize { get; set;}
-        @("页码".GetCSharpSummary())        
-        public int PageNumber { get; set;}
-        @("总数".GetCSharpSummary())
-        public long Total { get; set;}
     }
 }

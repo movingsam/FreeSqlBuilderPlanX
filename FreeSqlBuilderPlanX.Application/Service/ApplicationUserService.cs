@@ -3,25 +3,32 @@
 // 创建日期 2020-09-16 12:42
 // 创建引擎 FreeSqlBuilder
 //*******************************
-using FreeSqlBuilderPalanX.Application.Entity;
+
 using FreeSqlBuilderPlanX.Application.DbContext;
 using FreeSqlBuilderPlanX.Application.Dto.ApplicationUser;
-using FreeSqlBuilderPlanX.Application.Dto.Login;
+using FreeSqlBuilderPlanX.Application.Entity;
 using FreeSqlBuilderPlanX.Application.IService;
+using FreeSqlBuilderPlanX.Infrastructure.Cache;
+using FreeSqlBuilderPlanX.Infrastructure.Consts;
+using FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac;
+using FreeSqlBuilderPlanX.Infrastructure.Exceptions;
+using FreeSqlBuilderPlanX.Infrastructure.Security;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
+using FreeSqlBuilderPlanX.Infrastructure.Utils;
+using FreeSqlBuilderPlanX.Web.Dto.Login;
+using FreeSqlBuilderPlanX.Web.IServices;
+using GIMS.Infrastructure.Cache;
+using IdentityModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FreeSqlBuilderPlanX.Infrastructure.Cache;
-using FreeSqlBuilderPlanX.Infrastructure.Consts;
-using FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac;
-using FreeSqlBuilderPlanX.Infrastructure.Security;
-using FreeSqlBuilderPlanX.Infrastructure.Utils;
-using GIMS.Infrastructure.Cache;
-using Microsoft.Extensions.DependencyInjection;
+using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
+using ISession = FreeSqlBuilderPlanX.Infrastructure.Sessions.ISession;
 
 namespace FreeSqlBuilderPlanX.Application.Service
 {
@@ -29,16 +36,17 @@ namespace FreeSqlBuilderPlanX.Application.Service
     ///<summary>
     /// 服务
     ///</summary>
-    public class ApplicationUserService : ServiceBase<ApplicationUser, ApplicationContext>, IApplicationUserIService, ILoginService, ISessionStore
+    public class ApplicationUserService : ServiceBase<ApplicationUser, ApplicationContext>, IApplicationUserIService, ILoginService<ApplicationUser, LoginRequest, LoginResponse>, ISessionStore<ApplicationUserDto>
     {
         private readonly ICache _cache;
-
+        private readonly ISession _session;
         ///<summary>
         /// 构造函数
         ///</summary>
         public ApplicationUserService(IServiceProvider service, ILogger<ApplicationUserService> logger) : base(service, logger)
         {
             _cache = service.GetService<ICache>();
+            _session = service.GetService<ISession>();
         }
 
 
@@ -48,6 +56,10 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<bool> NewApplicationUser(ApplicationUserRequestDto dto)
         {
             var entity = Mapper.Map<ApplicationUser>(dto);
+            if (entity.Roles.Count > 0)
+            {
+                await Repository.SaveManyAsync(entity, nameof(ApplicationUser.Roles));
+            }
             await Repository.InsertAsync(entity);
             await UowManager.CommitAsync();
             return true;
@@ -78,16 +90,16 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<ApplicationUserPageViewDto> QueryApplicationUserPage(ApplicationUserPageRequest request)
         {
             var datas = await Repository
-                                .Select
-                                .IncludeMany(app => app.Roles)
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.UserName), x => x.UserName.Contains(request.UserName))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.Email), x => x.Email.Contains(request.Email))
-                                .WhereIf(!string.IsNullOrWhiteSpace(request.Phone), x => x.Phone.Contains(request.Phone))
-                                .Count(out var total)
-                                .Page(request.PageNumber, request.PageSize)
-                                .ToListAsync();
+                .Select.IncludeMany(app => app.Roles)
+                .WhereIf(!string.IsNullOrWhiteSpace(request.UserName), x => x.UserName.Contains(request.UserName))
+                .WhereIf(!string.IsNullOrWhiteSpace(request.Email), x => x.Email.Contains(request.Email))
+                .WhereIf(!string.IsNullOrWhiteSpace(request.Phone), x => x.Phone.Contains(request.Phone))
+                .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
+                .Count(out var total)
+                .Page(request.PageNumber, request.PageSize)
+                .ToListAsync();
             var views = Mapper.Map<List<ApplicationUserDto>>(datas);
-            var page = new ApplicationUserPageViewDto(views, total, request.PageNumber, request.PageSize);
+            var page = new ApplicationUserPageViewDto(views, request, total);
             return page;
         }
 
@@ -95,10 +107,10 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///<summary>
         /// 查询
         ///</summary>
-        public async Task<ApplicationUserDto> QueryApplicationUser(Guid Id)
+        public async Task<ApplicationUserDto> QueryApplicationUser(Guid id)
         {
             var data = await Repository.Select.IncludeMany(app => app.Roles)
-                                       .Where(x => x.Id == Id)
+                                       .Where(x => x.Id == id)
                                        .ToOneAsync();
             var view = Mapper.Map<ApplicationUserDto>(data);
             return view;
@@ -113,13 +125,11 @@ namespace FreeSqlBuilderPlanX.Application.Service
                 .Where(x => x.UserName == request.UserId).ToOneAsync();
             if (user == null)
             {
-                response.Result = LoginResult.NoUser;
-                return response;
+                throw new Warning("用户不存在");
             }
             if (user.HashPassword != hashPassword)
             {
-                response.Result = LoginResult.PasswordError;
-                return response;
+                throw new Warning("密码错误");
             }
             response.JwtResult = GetJwt(user);
             return response;
@@ -128,8 +138,8 @@ namespace FreeSqlBuilderPlanX.Application.Service
         private JwtResult GetJwt(ApplicationUser user)
         {
             var id = new ClaimsIdentity(SysConsts.WEB_COOKIES_NAME);
-            id.AddClaims(new Claim[] {
-                new Claim( "UserId", user.Id.ToString()),
+            id.AddClaims(new[] {
+                new Claim( JwtClaimTypes.Subject, user.Id.ToString()),
             });
             var jwtSetting = Ioc.Create<JwtSetting>();
             var token = new JwtSecurityToken(
@@ -140,24 +150,40 @@ namespace FreeSqlBuilderPlanX.Application.Service
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddSeconds(jwtSetting.ExpireSeconds)
             );
-            var refreshToken = $"{user.Id.ToString()}{DateTime.UtcNow}".GetMd5Hash();
-            _cache.SetAsync(string.Format(CacheKeyTemplate.UserSession, user.Id), user, new TimeSpan(0, 0, 0, 1 * 60 * 60));
-            return new JwtResult()
+            var refreshToken = $"{user.Id}{DateTime.UtcNow}".GetMd5Hash();
+            var userDto = Mapper.Map<ApplicationUserDto>(user);
+            _cache.SetAsync(string.Format(CacheKeyTemplate.UserSession, user.Id.ToString()), userDto, new TimeSpan(0, 0, 0, 1 * 60 * 60));
+            var jwt = new JwtResult
             {
-                Duration = new DateTime().AddSeconds(1 * 60 * 60),
+                Duration = DateTime.Now.AddSeconds(1 * 60 * 60),
                 RefreshToken = refreshToken,
                 Token = new JwtSecurityTokenHandler().WriteToken(token)
             };
+            return jwt;
         }
 
-        public Task<bool> LogOut(string userId)
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Logout()
         {
-            throw new NotImplementedException();
+            var res = await _cache.RemoveAsync(string.Format(CacheKeyTemplate.UserSession, _session.UserId));
+            return res > 0;
         }
 
+        /// <summary>
+        /// 获取当前用户
+        /// </summary>
+        /// <returns></returns>
         public Task<ApplicationUserDto> GetCurrentUser()
         {
-            throw new NotImplementedException();
+            return _cache.GetOrCreateAsync<ApplicationUserDto>(string.Format(CacheKeyTemplate.UserSession, _session.UserId),
+                async (f) =>
+                {
+                    f.AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 0, 2 * 60 * 60);
+                    return await QueryApplicationUser(new Guid(_session.UserId));
+                });
         }
     }
 }

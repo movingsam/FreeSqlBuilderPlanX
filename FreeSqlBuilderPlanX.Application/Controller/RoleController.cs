@@ -1,12 +1,12 @@
 //*******************************
 // 创建者 Movingsam
-// 创建日期 2020-09-16 12:42
+// 创建日期 2020-11-06 18:05
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
-using FreeSqlBuilderPlanX.Application.Dto.Role;
 using FreeSqlBuilderPlanX.Application.IService;
-using FreeSqlBuilderPlanX.Infrastructure.Controller;
+using FreeSqlBuilderPlanX.Web.Controller;
+using FreeSqlBuilderPlanX.Web.Dto.Role;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -56,7 +56,7 @@ namespace FreeSqlBuilderPlanX.Application.Controller
         /// 新增
         ///</summary>
         [HttpPost]
-        public async Task<IActionResult> New(RoleRequestDto request)
+        public async Task<IActionResult> New([FromBody]RoleRequestDto request)
         {
             var res= await _service.NewRole(request);
             return Success(res);
@@ -66,7 +66,7 @@ namespace FreeSqlBuilderPlanX.Application.Controller
         /// 修改
         ///</summary>
         [HttpPut]
-        public async Task<IActionResult> Update(RoleRequestDto request)
+        public async Task<IActionResult> Update([FromBody]RoleRequestDto request)
         {
             var res= await _service.UpdateRole(request);
             return Success(res);

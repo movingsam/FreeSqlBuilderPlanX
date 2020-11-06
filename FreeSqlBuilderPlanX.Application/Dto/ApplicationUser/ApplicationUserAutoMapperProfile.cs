@@ -3,10 +3,8 @@
 // 创建日期 2020-11-03 16:59
 // 创建引擎 FreeSqlBuilder
 //******************************* 
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 
 namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationUser
 {
@@ -14,9 +12,9 @@ namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationUser
     {
         public ApplicationUserAutoMapperProfile(){
 
-        CreateMap<FreeSqlBuilderPalanX.Application.Entity.ApplicationUser,ApplicationUserDto>();
+        CreateMap<Entity.ApplicationUser,ApplicationUserDto>();
 
-        CreateMap<ApplicationUserRequestDto,FreeSqlBuilderPalanX.Application.Entity.ApplicationUser>();
+        CreateMap<ApplicationUserRequestDto,Entity.ApplicationUser>();
 
         }
     }

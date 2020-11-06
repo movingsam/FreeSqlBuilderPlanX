@@ -17,11 +17,12 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas.Extensions
             where TSource : EntityBase<TKey>
             where TDto : DtoBase<TKey>
         {
+            var orderParam = new OrderByStruct(page.OrderByString);
             var res = select
-                .Count(out var total)
-                .OrderBy(page.OrderBy)
-                .Page(page.PageNumber, page.PageSize)
-                .ToList<TDto>();
+                            .Count(out var total)
+                            .OrderByPropertyName(orderParam.PropertyName,orderParam.IsAscending)
+                            .Page(page.PageNumber, page.PageSize)
+                            .ToList<TDto>();
             return new PageViewBase<TDto, TKey>(res, page, total);
         }
 
@@ -29,11 +30,12 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Datas.Extensions
             where TSource : EntityBase<TKey>
             where TDto : DtoBase<TKey>
         {
+            var orderParam = new OrderByStruct(page.OrderByString);
             var res = await select
-                .Count(out var total)
-                .OrderBy(page.OrderBy)
-                .Page(page.PageNumber, page.PageSize)
-                .ToListAsync<TDto>();
+                                .Count(out var total)
+                                .OrderByPropertyName(orderParam.PropertyName, orderParam.IsAscending)
+                                .Page(page.PageNumber, page.PageSize)
+                                .ToListAsync<TDto>();
             return new PageViewBase<TDto, TKey>(res, page, total);
         }
     }

@@ -36,8 +36,7 @@ namespace XUnitTestIoc
                         // Add TestServer
                         webHost.UseTestServer();
                         webHost.UseStartup<Startup>();
-                    })
-                ;
+                    });
             host = hostBuilder.Start();
             _client = host.GetTestClient();
         }

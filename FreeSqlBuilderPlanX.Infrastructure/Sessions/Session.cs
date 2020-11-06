@@ -18,7 +18,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Sessions
         /// <summary>
         /// 是否认证
         /// </summary>
-        public bool IsAuthenticated => Web.Identity.IsAuthenticated;
+        public bool IsAuthenticated =>  Utils.Web.Identity.IsAuthenticated;
 
         /// <summary>
         /// 用户标识
@@ -27,8 +27,8 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Sessions
         {
             get
             {
-                var result = Web.Identity.GetValue(JwtClaimTypes.Subject);
-                return string.IsNullOrWhiteSpace(result) ? Web.Identity.GetValue(System.Security.Claims.ClaimTypes.NameIdentifier) : result;
+                var result = Utils.Web.Identity.GetValue(JwtClaimTypes.Subject);
+                return string.IsNullOrWhiteSpace(result) ? Utils.Web.Identity.GetValue(System.Security.Claims.ClaimTypes.NameIdentifier) : result;
             }
         }
     }

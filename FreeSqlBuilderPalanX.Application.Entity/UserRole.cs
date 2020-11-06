@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FreeSqlBuilderPalanX.Application.Entity
+namespace FreeSqlBuilderPlanX.Application.Entity
 {
     public class UserRole
     {
