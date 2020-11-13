@@ -19,7 +19,7 @@ namespace FreeSqlBuilderPlanX.Web.Controller
         {
             if (message == null)
                 message = "成功";
-            return new Result(StateCode.Ok, message, data);
+            return new WebResult(StateCode.Ok, message, data);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace FreeSqlBuilderPlanX.Web.Controller
         /// <param name="message">消息</param>
         protected virtual IActionResult Fail(string message)
         {
-            return new Result(StateCode.Fail, message);
+            return new WebResult(StateCode.Fail, message);
         }
     }
 }

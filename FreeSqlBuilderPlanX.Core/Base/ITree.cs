@@ -9,7 +9,8 @@ namespace FreeSqlBuilderPlanX.Core.Base
     {
         PTKey ParentId { get; }
         TParent Parent { get; }
-        ICollection<TParent> Children { get; }
+        ICollection<TParent> Children { get; set; }
+        string NodePath { get; set; }
     }
 
     public interface ITree<TParent> : ITree<TParent, Guid, Guid?>

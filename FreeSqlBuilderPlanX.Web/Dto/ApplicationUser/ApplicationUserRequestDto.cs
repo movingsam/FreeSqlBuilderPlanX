@@ -1,21 +1,21 @@
 //*******************************
 // 创建者 Movingsam
-// 创建日期 2020-11-06 16:54
+// 创建日期 2020-11-12 17:28
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
+using FreeSqlBuilderPlanX.Core.Base;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using FreeSqlBuilderPlanX.Web.Dto.Role;
 
-namespace FreeSqlBuilderPlanX.Web.Dto.ApplicationUser
+
+namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationUser
 {
 
     ///<summary>
     /// Request
     ///</summary>
-    public class ApplicationUserRequestDto
+    public class ApplicationUserRequestDto :RequestDto
     {
         [MaxLength(255)]
         public string UserName { get; set; }
@@ -35,8 +35,6 @@ namespace FreeSqlBuilderPlanX.Web.Dto.ApplicationUser
 
         [MaxLength(255)]
         public string Phone { get; set; }
-
-        public ICollection<RoleRequestDto> Roles { get; set; }
 
      }
 }

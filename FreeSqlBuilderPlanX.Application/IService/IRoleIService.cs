@@ -28,7 +28,7 @@ namespace FreeSqlBuilderPlanX.Application.IService
         ///<summary>
         /// 修改
         ///</summary>
-        Task<bool> UpdateRole(RoleRequestDto dto);
+        Task<bool> UpdateRole(Guid id, RoleRequestDto dto);
         ///<summary>
         /// 删除
         ///</summary>

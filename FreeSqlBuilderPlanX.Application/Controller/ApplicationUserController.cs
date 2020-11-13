@@ -4,9 +4,9 @@
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
+using FreeSqlBuilderPlanX.Application.Dto.ApplicationUser;
 using FreeSqlBuilderPlanX.Application.IService;
 using FreeSqlBuilderPlanX.Web.Controller;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,63 +22,63 @@ namespace FreeSqlBuilderPlanX.Application.Controller
     public class ApplicationUserController : ApiControllerBase
     {
         private IApplicationUserIService _service => HttpContext.RequestServices.GetService<IApplicationUserIService>();
-        private ILogger Logger =>  HttpContext.RequestServices.GetService<ILogger<ApplicationUserController>>();
-        
+        private ILogger Logger => HttpContext.RequestServices.GetService<ILogger<ApplicationUserController>>();
+
         ///<summary>
         /// 构造函数
         ///</summary>
         public ApplicationUserController()
         {
         }
-        
+
         ///<summary>
         /// 分页查询
         ///</summary>
         [HttpGet("Page")]
         public async Task<IActionResult> GetPage(ApplicationUserPageRequest request)
         {
-            var res= await _service.QueryApplicationUserPage(request);
+            var res = await _service.QueryApplicationUserPage(request);
             return Success(res);
         }
 
-        
+
         ///<summary>
         /// 查询
         ///</summary>
         [HttpGet("{Id}")]
         public async Task<IActionResult> Get(Guid Id)
         {
-            var res= await _service.QueryApplicationUser(Id);
+            var res = await _service.QueryApplicationUser(Id);
             return Success(res);
         }
-        
+
         ///<summary>
         /// 新增
         ///</summary>
         [HttpPost]
-        public async Task<IActionResult> New([FromBody]ApplicationUserRequestDto request)
+        public async Task<IActionResult> New([FromBody] ApplicationUserRequestDto request)
         {
-            var res= await _service.NewApplicationUser(request);
+            var res = await _service.NewApplicationUser(request);
             return Success(res);
         }
-        
+
         ///<summary>
         /// 修改
         ///</summary>
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody]ApplicationUserRequestDto request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] ApplicationUserRequestDto request)
         {
-            var res= await _service.UpdateApplicationUser(request);
+            var res = await _service.UpdateApplicationUser(id, request);
             return Success(res);
         }
-        
+
         ///<summary>
         /// 删除
         ///</summary>
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(Guid Id)
         {
-            var res= await _service.DeleteApplicationUser(Id);
+            var res = await _service.DeleteApplicationUser(Id);
             return Success(res);
         }
 

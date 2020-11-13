@@ -9,7 +9,6 @@ using FreeSqlBuilderPlanX.Application.Entity;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
 using System;
 using System.Threading.Tasks;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 
 namespace FreeSqlBuilderPlanX.Application.IService
 {
@@ -29,7 +28,7 @@ namespace FreeSqlBuilderPlanX.Application.IService
         ///<summary>
         /// 修改
         ///</summary>
-        Task<bool> UpdateApplicationUser(ApplicationUserRequestDto dto);
+        Task<bool> UpdateApplicationUser(Guid id,ApplicationUserRequestDto dto);
         ///<summary>
         /// 删除
         ///</summary>

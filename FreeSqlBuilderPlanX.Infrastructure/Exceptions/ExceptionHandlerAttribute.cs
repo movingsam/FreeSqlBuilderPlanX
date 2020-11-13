@@ -22,7 +22,7 @@ namespace FreeSqlBuilderPlanX.Infrastructure.Exceptions
             var logger = context.HttpContext.RequestServices.GetService<ILogger<ExceptionHandlerAttribute>>();
             var error = context.Exception;
             logger.LogError(error.GetPrompt());
-            context.Result = new Result(StateCode.Fail, error.GetPrompt());
+            context.Result = new WebResult(StateCode.Fail, error.GetPrompt());
         }
 
         public override Task OnExceptionAsync(ExceptionContext context)

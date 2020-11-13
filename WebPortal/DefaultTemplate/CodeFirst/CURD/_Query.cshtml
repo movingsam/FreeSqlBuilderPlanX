@@ -1,5 +1,6 @@
 ﻿@using FreeSqlBuilder.Core.Utilities
 @using FreeSqlBuilder.TemplateEngine.Utilities
+@using FreeSqlBuilderPlanX.Core.Base
 @using CurdTask = FreeSqlBuilder.TemplateEngine.CurdTask
 @model CurdTask
 @{
@@ -14,6 +15,8 @@
     var includeStr = $"{includes}{includeMany}";
     var pkType = Reflection.ToCsType(task.CurrentTable.Primarys.FirstOrDefault()?.CsType);
     var pkName = task.CurrentTable.Primarys.FirstOrDefault()?.CsName;
+    var tableType = Model.CurrentTable.Type;
+    var isTreeStruct = Reflection.BaseFrom(tableType, typeof(TreeEntityBase<,,>));
 }
         @($"{Model.CurrentTable?.Comment}分页查询".GetCSharpSummary())
         public async Task<@(pageViewDto)> Query@(Model.CurrentTable.CsName)Page (@pageRequest request)
@@ -23,10 +26,17 @@
                                 .OrderByPropertyName(request.OrderBy.PropertyName, request.OrderBy.IsAscending)
                                 .Count(out var total)
                                 .Page(request.PageNumber, request.PageSize)
-                                .ToListAsync();
-            var views = Mapper.Map@($"<List<{dto}>>")(datas);
-            var page = new @pageViewDto (views,total, request.PageNumber, request.PageSize);
-            return page;
+                                @if (isTreeStruct)
+                                {
+                                @:.ToTreeListAsync();
+                                }
+                                else
+                                {  
+                                @:.ToListAsync();
+                                }
+                                var views = Mapper.Map@($"<List<{dto}>>")(datas);
+                                var page = new @pageViewDto (views,total, request.PageNumber, request.PageSize);
+                                return page;
         }
 
         @($"{Model.CurrentTable?.Comment}查询".GetCSharpSummary())

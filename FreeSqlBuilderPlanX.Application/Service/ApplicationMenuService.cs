@@ -8,13 +8,13 @@ using FreeSqlBuilderPlanX.Application.DbContext;
 using FreeSqlBuilderPlanX.Application.Dto.ApplicationMenu;
 using FreeSqlBuilderPlanX.Application.Entity;
 using FreeSqlBuilderPlanX.Application.IService;
+using FreeSqlBuilderPlanX.Infrastructure.Datas.Extensions;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationMenu;
 
 namespace FreeSqlBuilderPlanX.Application.Service
 {
@@ -40,7 +40,7 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<bool> NewApplicationMenu(ApplicationMenuRequestDto dto)
         {
             var entity = Mapper.Map<ApplicationMenu>(dto);
-            await Repository.InsertAsync(entity);
+            await Repository.TreeInsertAsync<ApplicationMenu, long, long?>(entity);
             await UowManager.CommitAsync();
             return true;
         }
@@ -48,10 +48,10 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///<summary>
         /// 修改
         ///</summary>
-        public async Task<bool> UpdateApplicationMenu(ApplicationMenuRequestDto dto)
+        public async Task<bool> UpdateApplicationMenu(long id, ApplicationMenuRequestDto dto)
         {
             var entity = Mapper.Map<ApplicationMenu>(dto);
-            await Repository.UpdateAsync(entity);
+            await Repository.TreeUpdateAsync<ApplicationMenu, long, long?>(id, entity);
             await UowManager.CommitAsync();
             return true;
         }
@@ -78,9 +78,9 @@ namespace FreeSqlBuilderPlanX.Application.Service
                                 .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
                                 .Count(out var total)
                                 .Page(request.PageNumber, request.PageSize)
-                                .ToListAsync();
+                                .ToTreeListAsync();
             var views = Mapper.Map<List<ApplicationMenuDto>>(datas);
-            var page = new ApplicationMenuPageViewDto(views, request,total);
+            var page = new ApplicationMenuPageViewDto(views, request, total);
             return page;
         }
 
@@ -90,9 +90,9 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///</summary>
         public async Task<ApplicationMenuDto> QueryApplicationMenu(long Id)
         {
-            var data = await Repository.Select
-                                       .Where(x => x.Id == Id)
-                                       .ToOneAsync();
+            var data = await Repository
+                .Select
+                .GetSingleTreeAsync<ApplicationMenu, long, long?>(Id);
             var view = Mapper.Map<ApplicationMenuDto>(data);
             return view;
         }

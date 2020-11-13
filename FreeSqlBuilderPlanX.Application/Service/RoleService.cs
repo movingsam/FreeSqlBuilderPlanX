@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FreeSqlBuilderPlanX.Infrastructure.Exceptions;
 using FreeSqlBuilderPlanX.Web.Dto.Role;
 
 namespace FreeSqlBuilderPlanX.Application.Service
@@ -46,9 +47,10 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///<summary>
         /// 修改
         ///</summary>
-        public async Task<bool> UpdateRole(RoleRequestDto dto)
+        public async Task<bool> UpdateRole(Guid id, RoleRequestDto dto)
         {
             var entity = Mapper.Map<Role>(dto);
+            entity.Id = id;
             await Repository.UpdateAsync(entity);
             await UowManager.CommitAsync();
             return true;
@@ -58,8 +60,9 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///</summary>
         public async Task<bool> DeleteRole(Guid id)
         {
-            await Repository.DeleteAsync(x => x.Id == id);
+            var res = await Repository.DeleteAsync(x => x.Id == id && x.Code != "admin");
             await UowManager.CommitAsync();
+            if (res == 0) throw new Warning("角色不存在,或角色为系统默认角色无法删除");
             return true;
         }
         ///<summary>
@@ -68,10 +71,12 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<RolePageViewDto> QueryRolePage(RolePageRequest request)
         {
             var datas = await Repository
-                .Select.IncludeMany(rol => rol.Users)
+                .Select
+                .IncludeMany(rol => rol.Users)
                 .WhereIf(!string.IsNullOrWhiteSpace(request.Name), x => x.Name.Contains(request.Name))
                 .WhereIf(!string.IsNullOrWhiteSpace(request.Code), x => x.Code.Contains(request.Code))
                 .WhereIf(!string.IsNullOrWhiteSpace(request.Descriptions), x => x.Descriptions.Contains(request.Descriptions))
+                .WhereIf(!string.IsNullOrWhiteSpace(request.Keyword), x => x.Descriptions.Contains(request.Keyword) || x.Name.Contains(request.Keyword) || x.Code.Contains(request.Keyword))
                 .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
                 .Count(out var total)
                 .Page(request.PageNumber, request.PageSize)

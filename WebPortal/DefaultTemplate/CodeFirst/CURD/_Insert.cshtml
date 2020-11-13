@@ -1,7 +1,11 @@
-﻿@using FreeSqlBuilder.TemplateEngine.Utilities
+﻿@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@using FreeSqlBuilderPlanX.Core.Base
 @using CurdTask = FreeSqlBuilder.TemplateEngine.CurdTask
 @model CurdTask
 @{
+    var tableType = Model.CurrentTable.Type;
+    var isTreeStruct = Reflection.BaseFrom(tableType, typeof(TreeEntityBase<,,>));
     var Dto = Model.Task.Project.Builders.FirstOrDefault(x => x.Name == "RequestDto").GetName(Model.CurrentTable.CsName);
 }
 
@@ -9,7 +13,13 @@
         public async Task<@("bool")> New@(Model.CurrentTable.CsName) (@Dto dto)
         {
             var entity = Mapper.Map@($"<{Model.CurrentTable.CsName}>")(dto);
-            await Repository.InsertAsync(entity);
+            @if (isTreeStruct)
+            {
+                @:await Repository.TreeInsertAsync(entity);
+            }
+            else {
+                @:await Repository.InsertAsync(entity);
+            }
             await UowManager.CommitAsync();
             return true;
         }

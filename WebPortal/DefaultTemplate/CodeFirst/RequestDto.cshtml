@@ -11,7 +11,7 @@
     var currentBuilder = Model.CurrentBuilder;
     var ignore = new string[] { nameof(IKey.Id),nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled)
         ,nameof(IUpdate.UpdateBy),nameof(IUpdate.UpdateDate),nameof(ICreate.CreateBy)
-        ,nameof(ICreate.CreateDate),"Children","Parent","ParentId","NodePath"
+        ,nameof(ICreate.CreateDate),"Children","Parent","NodePath"
     };
 }
 
@@ -19,14 +19,15 @@ using System.Collections;
 using System.Collections.Generic;
 using FreeSql.DataAnnotations;
 using System.ComponentModel.DataAnnotations;
+using FreeSqlBuilderPlanX.Core.Base;
 @Model.GetUsing()
 
 namespace @Model.GetNameSpace()
 {
     @($"{table.Comment}Request".GetCSharpSummary())
-    public class @Model.GetCodeFirstName()
+    public class @Model.GetCodeFirstName() :RequestDto
     {
-        @foreach (var column in table.Properties)
+        @foreach (var column in table.Columns)
         {
             @if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
              {
@@ -34,7 +35,7 @@ namespace @Model.GetNameSpace()
              }
         @(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetCSharpSummary())
         @GetColumnAttribute(column.Key)
-        @:public @currentBuilder.ToBuilderType(column.Value.PropertyType) @column.Value.Name { get; set; }
+        @:public @currentBuilder.ToBuilderTypePk(column.Value) @column.Value.CsName { get; set; }
         @Html.NewLine()
         }
      }

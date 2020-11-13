@@ -7,7 +7,7 @@ namespace FreeSqlBuilderPlanX.Web.Controller
     /// <summary>
     /// 返回结果
     /// </summary>
-    public class Result : JsonResult
+    public class WebResult : JsonResult
     {
         /// <summary>
         /// 状态码
@@ -20,7 +20,7 @@ namespace FreeSqlBuilderPlanX.Web.Controller
         /// <summary>
         /// 数据
         /// </summary>
-        public dynamic Data { get; }
+        public dynamic Result { get; }
 
         /// <summary>
         /// 初始化返回结果
@@ -28,11 +28,11 @@ namespace FreeSqlBuilderPlanX.Web.Controller
         /// <param name="code">状态码</param>
         /// <param name="message">消息</param>
         /// <param name="data">数据</param>
-        public Result(StateCode code, string message, dynamic data = null) : base(null)
+        public WebResult(StateCode code, string message, dynamic data = null) : base(null)
         {
             Code = code;
             Message = message;
-            Data = data;
+            Result = data;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace FreeSqlBuilderPlanX.Web.Controller
             {
                 Code = Code.Value(),
                 Message,
-                Data
+                Result
             };
             return base.ExecuteResultAsync(context);
         }

@@ -1,13 +1,13 @@
 //*******************************
 // 创建者 Movingsam
-// 创建日期 2020-11-06 16:54
+// 创建日期 2020-11-12 17:28
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
-using System;
 using FreeSqlBuilderPlanX.Core.Base;
+using System;
 
-namespace FreeSqlBuilderPlanX.Web.Dto.ApplicationUser
+namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationUser
 {
 
     ///<summary>

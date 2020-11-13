@@ -19,7 +19,6 @@ using FreeSqlBuilderPlanX.Web.Dto.Login;
 using FreeSqlBuilderPlanX.Web.IServices;
 using GIMS.Infrastructure.Cache;
 using IdentityModel;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,7 +26,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 using ISession = FreeSqlBuilderPlanX.Infrastructure.Sessions.ISession;
 
 namespace FreeSqlBuilderPlanX.Application.Service
@@ -68,9 +66,10 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///<summary>
         /// 修改
         ///</summary>
-        public async Task<bool> UpdateApplicationUser(ApplicationUserRequestDto dto)
+        public async Task<bool> UpdateApplicationUser(Guid id, ApplicationUserRequestDto dto)
         {
             var entity = Mapper.Map<ApplicationUser>(dto);
+            entity.Id = id;
             await Repository.UpdateAsync(entity);
             await UowManager.CommitAsync();
             return true;
@@ -80,7 +79,8 @@ namespace FreeSqlBuilderPlanX.Application.Service
         ///</summary>
         public async Task<bool> DeleteApplicationUser(Guid id)
         {
-            await Repository.DeleteAsync(x => x.Id == id);
+            var res = await Repository.DeleteAsync(x => x.Id == id && x.UserName != "admin");
+            if (res == 0) throw new Warning("不能删除系统默认用户/用户不存在");
             await UowManager.CommitAsync();
             return true;
         }
@@ -90,14 +90,16 @@ namespace FreeSqlBuilderPlanX.Application.Service
         public async Task<ApplicationUserPageViewDto> QueryApplicationUserPage(ApplicationUserPageRequest request)
         {
             var datas = await Repository
-                .Select.IncludeMany(app => app.Roles)
-                .WhereIf(!string.IsNullOrWhiteSpace(request.UserName), x => x.UserName.Contains(request.UserName))
-                .WhereIf(!string.IsNullOrWhiteSpace(request.Email), x => x.Email.Contains(request.Email))
-                .WhereIf(!string.IsNullOrWhiteSpace(request.Phone), x => x.Phone.Contains(request.Phone))
-                .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
-                .Count(out var total)
-                .Page(request.PageNumber, request.PageSize)
-                .ToListAsync();
+                                    .Select
+                                    .IncludeMany(app => app.Roles)
+                                    .WhereIf(!string.IsNullOrWhiteSpace(request.UserName), x => x.UserName.Contains(request.UserName))
+                                    .WhereIf(!string.IsNullOrWhiteSpace(request.Email), x => x.Email.Contains(request.Email))
+                                    .WhereIf(!string.IsNullOrWhiteSpace(request.Phone), x => x.Phone.Contains(request.Phone))
+                                    .WhereIf(!string.IsNullOrWhiteSpace(request.Keyword), x => x.UserName.StartsWith(request.Keyword) || x.Phone.StartsWith(request.Keyword))
+                                    .OrderByPropertyName(request.OrderParam.PropertyName, request.OrderParam.IsAscending)
+                                    .Count(out var total)
+                                    .Page(request.PageNumber, request.PageSize)
+                                    .ToListAsync();
             var views = Mapper.Map<List<ApplicationUserDto>>(datas);
             var page = new ApplicationUserPageViewDto(views, request, total);
             return page;
@@ -122,7 +124,7 @@ namespace FreeSqlBuilderPlanX.Application.Service
             var hashPassword = request.Password.GetMd5Hash();
             var user = await Repository.Select
                 .IncludeMany(x => x.Roles)
-                .Where(x => x.UserName == request.UserId).ToOneAsync();
+                .Where(x => x.UserName == request.Username).ToOneAsync();
             if (user == null)
             {
                 throw new Warning("用户不存在");

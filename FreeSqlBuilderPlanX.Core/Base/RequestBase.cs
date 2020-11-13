@@ -11,4 +11,9 @@ namespace FreeSqlBuilderPlanX.Core.Base
     {
 
     }
+
+    public abstract class RequestDto
+    {
+        public int Version { get; set; }
+    }
 }

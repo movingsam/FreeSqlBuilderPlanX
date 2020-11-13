@@ -8,7 +8,6 @@ using FreeSqlBuilderPlanX.Application.Dto.ApplicationMenu;
 using FreeSqlBuilderPlanX.Application.Entity;
 using FreeSqlBuilderPlanX.Infrastructure.Services;
 using System.Threading.Tasks;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationMenu;
 
 namespace FreeSqlBuilderPlanX.Application.IService
 {
@@ -28,7 +27,7 @@ namespace FreeSqlBuilderPlanX.Application.IService
         ///<summary>
         /// 修改
         ///</summary>
-        Task<bool> UpdateApplicationMenu(ApplicationMenuRequestDto dto);
+        Task<bool> UpdateApplicationMenu(long id, ApplicationMenuRequestDto dto);
         ///<summary>
         /// 删除
         ///</summary>

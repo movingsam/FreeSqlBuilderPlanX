@@ -6,7 +6,7 @@ namespace FreeSqlBuilderPlanX.Web.Dto.Login
     {
         [Required]
         [MaxLength(24)]
-        public string UserId { get; set; }
+        public string Username { get; set; }
         [Required]
         [MaxLength(50)]
         public string Password { get; set; }

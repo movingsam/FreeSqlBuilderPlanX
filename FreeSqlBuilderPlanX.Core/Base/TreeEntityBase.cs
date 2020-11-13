@@ -24,7 +24,8 @@ namespace FreeSqlBuilderPlanX.Core.Base
         /// <summary>
         /// 树层级
         /// </summary>
-        public int Level { get; set; }
+        [Column(IsIgnore = true)]
+        public int Level => NodePath?.Split(",")?.Length ?? 0;
         /// <summary>
         /// 父节点Id
         /// </summary>

@@ -4,9 +4,9 @@
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
+using FreeSqlBuilderPlanX.Application.Dto.ApplicationUser;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 
 namespace FreeSqlBuilderPlanX.Web.Dto.Role
 {

@@ -1,15 +1,14 @@
 //*******************************
 // 创建者 Movingsam
-// 创建日期 2020-11-06 16:54
+// 创建日期 2020-11-12 17:28
 // 创建引擎 FreeSqlBuilder
 //*******************************
-
+using FreeSqlBuilderPlanX.Core.Base;
 using System;
 using System.Collections.Generic;
-using FreeSqlBuilderPlanX.Core.Base;
 using FreeSqlBuilderPlanX.Web.Dto.Role;
 
-namespace FreeSqlBuilderPlanX.Web.Dto.ApplicationUser
+namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationUser
 {
     public class ApplicationUserDto : DtoBase
     {

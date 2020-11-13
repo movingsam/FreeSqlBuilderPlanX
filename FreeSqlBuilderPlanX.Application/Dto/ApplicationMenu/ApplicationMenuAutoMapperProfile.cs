@@ -4,7 +4,6 @@
 // 创建引擎 FreeSqlBuilder
 //******************************* 
 using AutoMapper;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationMenu;
 
 namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationMenu
 {

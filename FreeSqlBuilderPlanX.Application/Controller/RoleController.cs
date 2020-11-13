@@ -22,63 +22,63 @@ namespace FreeSqlBuilderPlanX.Application.Controller
     public class RoleController : ApiControllerBase
     {
         private IRoleIService _service => HttpContext.RequestServices.GetService<IRoleIService>();
-        private ILogger Logger =>  HttpContext.RequestServices.GetService<ILogger<RoleController>>();
-        
+        private ILogger Logger => HttpContext.RequestServices.GetService<ILogger<RoleController>>();
+
         ///<summary>
         /// 构造函数
         ///</summary>
         public RoleController()
         {
         }
-        
+
         ///<summary>
         /// 分页查询
         ///</summary>
         [HttpGet("Page")]
         public async Task<IActionResult> GetPage(RolePageRequest request)
         {
-            var res= await _service.QueryRolePage(request);
+            var res = await _service.QueryRolePage(request);
             return Success(res);
         }
 
-        
+
         ///<summary>
         /// 查询
         ///</summary>
         [HttpGet("{Id}")]
         public async Task<IActionResult> Get(Guid Id)
         {
-            var res= await _service.QueryRole(Id);
+            var res = await _service.QueryRole(Id);
             return Success(res);
         }
-        
+
         ///<summary>
         /// 新增
         ///</summary>
         [HttpPost]
-        public async Task<IActionResult> New([FromBody]RoleRequestDto request)
+        public async Task<IActionResult> New([FromBody] RoleRequestDto request)
         {
-            var res= await _service.NewRole(request);
+            var res = await _service.NewRole(request);
             return Success(res);
         }
-        
+
         ///<summary>
         /// 修改
         ///</summary>
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody]RoleRequestDto request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] RoleRequestDto request)
         {
-            var res= await _service.UpdateRole(request);
+            var res = await _service.UpdateRole(id, request);
             return Success(res);
         }
-        
+
         ///<summary>
         /// 删除
         ///</summary>
         [HttpDelete("{Id}")]
         public async Task<IActionResult> Delete(Guid Id)
         {
-            var res= await _service.DeleteRole(Id);
+            var res = await _service.DeleteRole(Id);
             return Success(res);
         }
 

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 
 namespace FreeSqlBuilderPlanX.Application.Controller
 {

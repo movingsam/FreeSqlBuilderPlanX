@@ -4,7 +4,6 @@
 // 创建引擎 FreeSqlBuilder
 //******************************* 
 using AutoMapper;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 
 namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationUser
 {

@@ -12,7 +12,6 @@ using FreeSqlBuilderPlanX.Web.IServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using FreeSqlBuilderPlanX.Web.Dto.ApplicationUser;
 
 namespace FreeSqlBuilderPlanX.Application.Modules
 {

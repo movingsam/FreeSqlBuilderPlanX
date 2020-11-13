@@ -1,21 +1,22 @@
 //*******************************
 // 创建者 Movingsam
-// 创建日期 2020-11-06 16:54
+// 创建日期 2020-11-12 17:28
 // 创建引擎 FreeSqlBuilder
 //*******************************
 
+using FreeSqlBuilderPlanX.Core.Base;
 using System.ComponentModel.DataAnnotations;
 
-namespace FreeSqlBuilderPlanX.Web.Dto.ApplicationMenu
+
+namespace FreeSqlBuilderPlanX.Application.Dto.ApplicationMenu
 {
 
     ///<summary>
     /// Request
     ///</summary>
-    public class ApplicationMenuRequestDto
+    public class ApplicationMenuRequestDto :RequestDto
     {
-        [Required]
-        public int Level { get; set; }
+        public long? ParentId { get; set; }
 
         [MaxLength(255)]
         public string Name { get; set; }
