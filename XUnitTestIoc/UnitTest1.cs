@@ -1,12 +1,6 @@
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Net.Http;
-using FreeSqlBuilderPlanX.Infrastructure.Dependency.AutoFac;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using WebPortal;
 using Xunit;
 using Xunit.Abstractions;
 
