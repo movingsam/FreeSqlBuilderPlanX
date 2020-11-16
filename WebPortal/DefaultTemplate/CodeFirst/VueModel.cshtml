@@ -1,0 +1,79 @@
+﻿@using FreeSqlBuilder.Core.Utilities
+@using FreeSqlBuilder.TemplateEngine.Utilities
+@using FreeSqlBuilderPlanX.Core
+@using FreeSqlBuilderPlanX.Core.Base
+@model FreeSqlBuilder.TemplateEngine.IBuilderTask
+@{
+    Layout = "../Share/_Layout.cshtml";
+    var table = Model.CurrentTable;//当前执行表
+    var builder = Model.CurrentBuilder;//当前执行构建器
+    var ignore = new string[] { nameof(IDeleted.IsDeleted), nameof(IEnabled.Enabled) , nameof(IKey.Id)
+        ,nameof(IUpdate.UpdateBy),nameof(IUpdate.UpdateDate),nameof(ICreate.CreateBy)
+        ,nameof(ICreate.CreateDate)
+    };
+    var isTreeStruct = Reflection.BaseFrom(table.Type, typeof(TreeEntityBase<,,>));
+    var treeIgnore = new[] {"Parent","Children"};
+    var dtoBase = "DtoBase" +( table.Primarys.FirstOrDefault()?.CsType.Name == "Guid" ? ""
+        :
+        $"<{Reflection.ToCsType(table.Primarys.FirstOrDefault()?.CsType)}>");
+    var tableComment = string.IsNullOrWhiteSpace(table.Comment) ? table.CsName : table.Comment;
+    var tsPk = Reflection.ToTsType(table.Primarys.FirstOrDefault());
+}
+
+import { IVersion } from '../../model/baseModel';
+ 
+@($"@description: {tableComment} 单表查询参数".GetTypeScriptSummary(0))
+export interface @($"{table.CsName}")Params {
+    id:@tsPk;
+}
+
+
+@($"@description: {tableComment} 显示模型".GetTypeScriptSummary(0))
+export interface @($"{table.CsName}")ViewModel extends IVersion {
+@foreach (var column in table.Columns)
+{
+@if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+{
+    continue;
+}
+@(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetTypeScriptSummary(0))
+@: @column.Value.CsName.FirstLower():@Reflection.ToTsType(column.Value,null,"ViewModel");
+}
+}
+
+
+@($"@description: {tableComment} 新增模型".GetTypeScriptSummary(0))
+export interface New@(table.CsName) {
+@foreach (var column in table.Columns)
+{
+@if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+ {
+     continue;
+ }
+@if (isTreeStruct && treeIgnore.Contains( column.Key))
+ {
+     continue;
+ }
+@(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetTypeScriptSummary(0))
+@: @column.Value.CsName.FirstLower():@Reflection.ToTsType(column.Value,"New","");
+}
+
+}
+
+
+@($"@description: {tableComment} 更新模型".GetTypeScriptSummary(0))
+export interface Update@(table.CsName) extends IVersion {
+@foreach (var column in table.Columns)
+{
+@if (table.VersionColumn.CsName == column.Key || ignore.Contains(column.Key))
+ {
+     continue;
+ }
+@if (isTreeStruct && treeIgnore.Contains( column.Key))
+ {
+     continue;
+ }
+@(Comment.GetProperyCommentBySummary(table.Type)?.FirstOrDefault(x=>x.Key == column.Key).Value?.GetTypeScriptSummary(0))
+@: @column.Value.CsName.FirstLower():@Reflection.ToTsType(column.Value,"Update","");
+}
+}
